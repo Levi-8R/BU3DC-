@@ -2,6 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
+    <!-- Оставляем user-scalable=yes, чтобы страница могла зумиться, но внутри модалки управляем сами -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
     <title>BU3DC# — инди команда</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -123,7 +124,7 @@
       }
       .close-modal:hover { color: #fff; }
 
-      /* АККОРДЕОН ВЕРСИИ (С ПРОКРУТКОЙ) */
+      /* АККОРДЕОН ВЕРСИИ */
       .version-plate {
         background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: #fff;
         padding: 1rem 1.4rem; display: flex; justify-content: space-between;
@@ -134,21 +135,17 @@
       .version-arrow { transition: transform 0.2s ease; }
       .version-plate.expanded .version-arrow { transform: rotate(180deg); }
 
-      /* ГЛАВНОЕ ИЗМЕНЕНИЕ: ПРОКРУТКА ВНУТРИ БЛОКА */
       .expanded-content {
         max-height: 0; 
-        overflow-y: auto; /* вертикальная прокрутка, если не влезает */
+        overflow-y: auto;
         transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s;
         background: rgba(19, 19, 24, 0.4);
-        padding: 0; /* убираем паддинг, чтобы скролл был по всему блоку */
+        padding: 0;
       }
-      /* Когда аккордеон раскрыт — ставим реальную высоту и добавляем внутренний паддинг */
       .expanded-content.active {
-        max-height: 500px; /* ограничение высоты, чтобы не занимал весь экран */
+        max-height: 500px;
         padding: 1.4rem;
       }
-
-      .expanded-body { }
 
       /* ПРОСМОТРЩИК */
       .viewer-container {
@@ -164,6 +161,8 @@
         draggable="false";
         cursor: default;
         transform-origin: center center;
+        /* Важно: в обычном режиме — без трансформаций */
+        transform: translate(0, 0) scale(1);
       }
       .viewer-image.can-drag { cursor: grab; }
       .viewer-image.can-drag:active { cursor: grabbing; }
@@ -222,7 +221,7 @@
           <!-- Участник 1 -->
           <div class="team-member-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="openMemberModal('Ophiuchus', 'O.jpg')">
             <img src="O.jpg" alt="Ophiuchus" class="team-img">
-                        <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#fff;">Ophiuchus</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#fff;">Ophiuchus</span>
           </div>
           <!-- Участник 2 -->
           <div class="team-member-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="openMemberModal('Node', 'N.jpg')">
@@ -237,7 +236,7 @@
         <h2>Наши проекты</h2>
 
         <!-- Проект: Тени города Реха -->
-        <article class="project-card" onclick="openProjectModal('Тени города Реха', 'B 26.07.2026.png', 'Пока не скажу, что это и не раскрою сюжет, но скажу, что начал делать первую сцену архива (на фото один из этапов).', 'Blender')">
+                <article class="project-card" onclick="openProjectModal('Тени города Реха', 'B 26.07.2026.png', 'Пока не скажу, что это и не раскрою сюжет, но скажу, что начал делать первую сцену архива (на фото один из этапов).', 'Blender')">
           <div class="card-header-row">
             <h3 class="card-title">Тени города Реха</h3>
             <span class="card-status status-dev">В разработке</span>
@@ -248,7 +247,7 @@
       </section>
     </main>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРОЕКТА (с прокручиваемым контентом) -->
+    <!-- МОДАЛЬНОЕ ОКНО ПРОЕКТА (с прокручиваемым контентом и мультитач-зумом только в полноэкранном режиме) -->
     <div class="modal-overlay" id="projectModalOverlay">
       <div class="modal-window">
         <div class="modal-header">
@@ -261,7 +260,6 @@
           <span class="version-arrow">▼</span>
         </div>
 
-        <!-- Прокручиваемый блок: именно здесь будет скролл, если контента много -->
         <div class="expanded-content" id="versionContent">
           <div class="expanded-body">
             <div class="viewer-container" id="viewerContainer">
@@ -312,7 +310,7 @@
         const arrow = document.querySelector('.version-arrow');
         const content = document.getElementById('versionContent');
         arrow.textContent = '▼';
-        content.classList.remove('active'); // убираем активный класс, чтобы схлопнуть
+        content.classList.remove('expanded');
         content.style.maxHeight = null;
 
         overlay.classList.add('active');
@@ -340,15 +338,14 @@
         if (!isExpanded) {
           plate.classList.add('expanded');
           arrow.textContent = '▲';
-          content.classList.add('active'); // добавляем active, чтобы включить скролл и паддинг
-          // Даём браузеру чуть времени, чтобы он посчитал scrollHeight
+          content.classList.add('expanded'); // используем класс expanded вместо active для ясности
           setTimeout(() => {
             content.style.maxHeight = content.scrollHeight + 'px';
           }, 50);
         } else {
           plate.classList.remove('expanded');
           arrow.textContent = '▼';
-          content.classList.remove('active');
+          content.classList.remove('expanded');
           content.style.maxHeight = null;
         }
       }
@@ -403,14 +400,17 @@
         document.body.appendChild(overlay);
       }
 
-      // --- 5. ЛОГИКА ПРОСМОТРЩИКА: ЗУМ И ДРАГ ТОЛЬКО В ПОЛНОЭКРАННОМ РЕЖИМЕ ---
+      // --- 5. ЛОГИКА ПРОСМОТРЩИКА: мультитач и драг только в полноэкранном режиме ---
       let panX = 0;
       let panY = 0;
       let scale = 1;
       let isDragging = false;
       let lastX = 0;
       let lastY = 0;
+      let initialDistance = 0;
+      let initialScale = 1;
       let isFullscreen = false; // флаг полноэкранного режима
+      let fsElement = null;
 
       function initViewer() {
         const container = document.getElementById('viewerContainer');
@@ -421,46 +421,113 @@
         panY = 0;
         scale = 1;
         isFullscreen = false;
+        fsElement = null;
 
         container.style.overflow = 'hidden';
 
         img.classList.remove('can-drag');
         updateTransform();
 
-        // Слушатель колеса мыши: работает ТОЛЬКО в полноэкранном режиме
-        container.addEventListener('wheel', (e) => {
-          if (!isFullscreen) return;
+        // Удаляем старые слушатели, чтобы не дублировались
+        container.removeEventListener('wheel', handleWheel);
+        container.removeEventListener('mousedown', handleMouseDown);
+        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('mousemove', handleMouseMove);
 
-          e.preventDefault();
-          const delta = e.deltaY * -0.005;
-          const newScale = Math.max(0.1, Math.min(4, scale + delta));
+        container.addEventListener('wheel', handleWheel, { passive: false });
+        container.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener('mousemove', handleMouseMove);
+
+        // Мультитач
+        container.removeEventListener('touchstart', handleTouchStart);
+        container.removeEventListener('touchmove', handleTouchMove, { passive: false });
+        window.removeEventListener('touchend', handleTouchEnd);
+
+        container.addEventListener('touchstart', handleTouchStart, { passive: false });
+        container.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd);
+      }
+
+      function handleWheel(e) {
+        if (!isFullscreen) return;
+
+        e.preventDefault();
+        const delta = e.deltaY * -0.005;
+        const newScale = Math.max(0.1, Math.min(4, scale + delta));
+        scale = newScale;
+        updateTransform();
+      }
+
+      function handleMouseDown(e) {
+        if (!isFullscreen) return;
+
+        isDragging = true;
+        lastX = e.clientX - panX;
+        lastY = e.clientY - panY;
+        const container = document.getElementById('viewerContainer');
+        container.style.cursor = 'grabbing';
+      }
+
+      function handleMouseUp() {
+        isDragging = false;
+        const container = document.getElementById('viewerContainer');
+        container.style.cursor = 'grab';
+      }
+
+      function handleMouseMove(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        panX = e.clientX - lastX;
+        panY = e.clientY - lastY;
+        updateTransform();
+      }
+
+      // Мультитач логика (только в полноэкранном)
+      function handleTouchStart(e) {
+        if (!isFullscreen) return;
+
+        const touches = e.touches;
+        if (touches.length >= 2) {
+          // Пинч (зум)
+          initialDistance = Math.hypot(
+            touches[0].clientX - touches[1].clientX,
+            touches[0].clientY - touches[1].clientY
+          );
+          initialScale = scale;
+        } else if (touches.length === 1) {
+          // Одиночный тап — считаем как драг
+          lastX = touches[0].clientX - panX;
+          lastY = touches[0].clientY - panY;
+          isDragging = true;
+        }
+      }
+
+      function handleTouchMove(e) {
+        if (!isFullscreen) return;
+
+        e.preventDefault(); // Блокируем скролл страницы при мультитаче
+        const touches = e.touches;
+
+        if (touches.length >= 2) {
+          const currentDistance = Math.hypot(
+            touches[0].clientX - touches[1].clientX,
+            touches[0].clientY - touches[1].clientY
+          );
+
+          const scaleFactor = currentDistance / initialDistance;
+          const newScale = Math.max(0.1, Math.min(4, initialScale * scaleFactor));
           scale = newScale;
           updateTransform();
-        }, { passive: false });
-
-        // Обработка драга: работает ТОЛЬКО в полноэкранном режиме
-        container.addEventListener('mousedown', (e) => {
-          if (!isFullscreen) return;
-
-          isDragging = true;
-          lastX = e.clientX - panX;
-          lastY = e.clientY - panY;
-          container.style.cursor = 'grabbing';
-        });
-
-        window.addEventListener('mouseup', () => {
-          isDragging = false;
-          const container = document.getElementById('viewerContainer');
-          container.style.cursor = 'grab';
-        });
-
-        window.addEventListener('mousemove', (e) => {
-          if (!isDragging) return;
-          e.preventDefault();
-          panX = e.clientX - lastX;
-          panY = e.clientY - lastY;
+        } else if (isDragging && touches.length === 1) {
+          panX = touches[0].clientX - lastX;
+          panY = touches[0].clientY - lastY;
           updateTransform();
-        });
+        }
+      }
+
+      function handleTouchEnd() {
+        isDragging = false;
       }
 
       function updateTransform() {
@@ -477,19 +544,16 @@
       }
 
       // --- 6. ПОЛНОЭКРАННЫЙ РЕЖИМ ---
-      let fsElement = null;
-
       function toggleFullscreen() {
         const container = document.querySelector('.viewer-container');
         if (!container) return;
 
         if (!fsElement) {
-          // Включаем полноэкранный режим
           if (container.requestFullscreen) {
             fsElement = container;
             container.requestFullscreen().then(() => {
               isFullscreen = true;
-              updateTransform(); // применить текущие трансформации
+              updateTransform();
             }).catch(err => console.error(err));
           } else if (container.webkitRequestFullscreen) {
             fsElement = container;
@@ -498,12 +562,11 @@
             updateTransform();
           }
         } else {
-          // Выключаем полноэкранный режим
           if (document.exitFullscreen) {
             document.exitFullscreen().then(() => {
               isFullscreen = false;
               fsElement = null;
-              updateTransform(); // сбросить трансформации в обычный режим
+              updateTransform();
             });
           } else if (document.webkitExitFullscreen) {
             document.webkitExitFullscreen();
@@ -527,3 +590,4 @@
     </script>
   </body>
 </html>
+
