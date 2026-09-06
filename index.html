@@ -256,7 +256,7 @@
         </div>
 
         <div class="version-plate" onclick="toggleVersionContent()">
-          <span>Версия 26.08.2026</span>
+          <span>Версия 30.08.2026</span>
           <span class="version-arrow">▼</span>
         </div>
 
@@ -276,11 +276,33 @@
       </div>
     </div>
 
+    <div class="version-plate" onclick="toggleVersionContent()">
+          <span>Версия 06.09.2026</span>
+          <span class="version-arrow">▼</span>
+        </div>
+
+        <div class="expanded-content" id="versionContent">
+          <div class="expanded-body">
+            <div class="viewer-container" id="viewerContainer">
+              <img src="" alt="Скриншот проекта" class="viewer-image" id="modalImage">
+
+              <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen()">
+                <img src="Снимок экрана 2026-09-06 225507.png" alt="Развернуть" class="fs-icon">
+              </button>
+            </div>
+            <p class="modal-desc" id="modalDesc"></p>
+            <p class="modal-tools" id="modalTools"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <!-- МОДАЛЬНОЕ ОКНО УЧАСТНИКА -->
     <div class="modal-overlay" id="memberModalOverlay"></div>
 
     <footer>
-      <p>&copy; 2026 BU3DC#. Все права защищены.</p>
+      <p>&copy; 2026 BU3DC#.</p>
     </footer>
 
     <script>
