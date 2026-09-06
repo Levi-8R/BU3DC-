@@ -2,7 +2,6 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <!-- Оставляем user-scalable=yes, чтобы страница могла зумиться, но внутри модалки управляем сами -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
     <title>BU3DC# — инди команда</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -161,7 +160,6 @@
         draggable="false";
         cursor: default;
         transform-origin: center center;
-        /* Важно: в обычном режиме — без трансформаций */
         transform: translate(0, 0) scale(1);
       }
       .viewer-image.can-drag { cursor: grab; }
@@ -231,23 +229,22 @@
         </div>
       </section>
 
-      <!-- ПРОЕКТЫ -->
+    <!-- ПРОЕКТЫ -->
       <section id="projects">
         <h2>Наши проекты</h2>
 
         <!-- Проект: Тени города Реха -->
-                <article class="project-card" onclick="openProjectModal('Тени города Реха', 'B 26.07.2026.png', 'Пока не скажу, что это и не раскрою сюжет, но скажу, что начал делать первую сцену архива (на фото один из этапов).', 'Blender')">
+        <article class="project-card" onclick="openProjectModal('Тени города Реха')">
           <div class="card-header-row">
             <h3 class="card-title">Тени города Реха</h3>
             <span class="card-status status-dev">В разработке</span>
           </div>
         </article>
 
-        
       </section>
     </main>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРОЕКТА (с прокручиваемым контентом и мультитач-зумом только в полноэкранном режиме) -->
+    <!-- МОДАЛЬНОЕ ОКНО ПРОЕКТА (две версии, каждая со своим аккордеоном и просмотрщиком) -->
     <div class="modal-overlay" id="projectModalOverlay">
       <div class="modal-window">
         <div class="modal-header">
@@ -255,54 +252,46 @@
           <button class="close-modal" onclick="closeProjectModal()">&times;</button>
         </div>
 
-        <div class="version-plate" onclick="toggleVersionContent()">
-          <span>Версия 30.08.2026</span>
+        <!-- Версия 26.08.2026 -->
+        <div class="version-plate" onclick="toggleVersionContent(this)">
+          <span>Версия 26.08.2026</span>
           <span class="version-arrow">▼</span>
         </div>
-
-        <div class="expanded-content" id="versionContent">
-          <div class="expanded-body">
-            <div class="viewer-container" id="viewerContainer">
-              <img src="" alt="Скриншот проекта" class="viewer-image" id="modalImage">
-
-              <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen()">
-                <img src="R.png" alt="Развернуть" class="fs-icon">
-              </button>
-            </div>
-            <p class="modal-desc" id="modalDesc"></p>
-            <p class="modal-tools" id="modalTools"></p>
+        <div class="expanded-content">
+          <div class="viewer-container" data-viewer="v1">
+            <img src="" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v1">
+            <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v1')">
+              <img src="R.png" alt="Развернуть" class="fs-icon">
+            </button>
           </div>
+          <p class="modal-desc" id="modalDescV1"></p>
+          <p class="modal-tools" id="modalToolsV1"></p>
         </div>
-      </div>
-    </div>
 
-    <div class="version-plate" onclick="toggleVersionContent()">
+        <!-- Версия 06.09.2026 -->
+        <div class="version-plate" onclick="toggleVersionContent(this)">
           <span>Версия 06.09.2026</span>
           <span class="version-arrow">▼</span>
         </div>
-
-        <div class="expanded-content" id="versionContent">
-          <div class="expanded-body">
-            <div class="viewer-container" id="viewerContainer">
-              <img src="" alt="Скриншот проекта" class="viewer-image" id="modalImage">
-
-              <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen()">
-                <img src="Снимок экрана 2026-09-06 225507.png" alt="Развернуть" class="fs-icon">
-              </button>
-            </div>
-            <p class="modal-desc" id="modalDesc"></p>
-            <p class="modal-tools" id="modalTools"></p>
+        <div class="expanded-content">
+          <div class="viewer-container" data-viewer="v2">
+            <img src="" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v2">
+            <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v2')">
+              <img src="R.png" alt="Развернуть" class="fs-icon">
+            </button>
           </div>
+          <p class="modal-desc" id="modalDescV2"></p>
+          <p class="modal-tools" id="modalToolsV2"></p>
         </div>
+
       </div>
     </div>
-
 
     <!-- МОДАЛЬНОЕ ОКНО УЧАСТНИКА -->
     <div class="modal-overlay" id="memberModalOverlay"></div>
 
     <footer>
-      <p>&copy; 2026 BU3DC#.</p>
+      <p>&copy; 2026 BU3DC#. Все права защищены.</p>
     </footer>
 
     <script>
@@ -316,29 +305,39 @@
       }
 
       // --- 2. Модальное окно проекта ---
-      function openProjectModal(title, imgSrc, desc, tools) {
+      function openProjectModal(title) {
         const overlay = document.getElementById('projectModalOverlay');
-        const imgEl = document.getElementById('modalImage');
-        const titleEl = document.getElementById('modalProjectTitle');
-        const descEl = document.getElementById('modalDesc');
-        const toolsEl = document.getElementById('modalTools');
+        document.getElementById('modalProjectTitle').textContent = title;
 
-        titleEl.textContent = title;
-        imgEl.src = imgSrc;
-        descEl.textContent = desc;
-        toolsEl.textContent = 'Инструменты: ' + tools;
+        // Данные версии 1
+        const imgV1 = document.querySelector('[data-viewer-img="v1"]');
+        imgV1.src = 'B 26.07.2026.png';
+        document.getElementById('modalDescV1').textContent =
+          'Пока не скажу, что это и не раскрою сюжет, но скажу, что начал делать первую сцену архива (на фото один из этапов).';
+        document.getElementById('modalToolsV1').textContent = 'Инструменты: Blender';
 
-        // Сброс состояния аккордеона
-        const arrow = document.querySelector('.version-arrow');
-        const content = document.getElementById('versionContent');
-        arrow.textContent = '▼';
-        content.classList.remove('expanded');
-        content.style.maxHeight = null;
+        // Данные версии 2
+        const imgV2 = document.querySelector('[data-viewer-img="v2"]');
+        imgV2.src = 'Снимок экрана 2026-09-06 225507.png';
+        document.getElementById('modalDescV2').textContent = 'А вот и архивист';
+        document.getElementById('modalToolsV2').textContent = 'Инструменты: Blender';
+
+        // Сброс всех аккордеонов
+        document.querySelectorAll('.version-plate').forEach(plate => {
+          plate.classList.remove('expanded');
+          const arrow = plate.querySelector('.version-arrow');
+          if (arrow) arrow.textContent = '▼';
+        });
+        document.querySelectorAll('.expanded-content').forEach(c => {
+          c.classList.remove('active');
+          c.style.maxHeight = null;
+        });
 
         overlay.classList.add('active');
 
-        // Инициализация просмотрщика (сброс трансформаций)
-        initViewer();
+        // Инициализация обоих просмотрщиков
+        initViewer('v1');
+        initViewer('v2');
       }
 
       function closeProjectModal() {
@@ -349,25 +348,23 @@
         if (e.target === e.currentTarget) closeProjectModal();
       });
 
-      // --- 3. Аккордеон (версия) с прокруткой ---
-      function toggleVersionContent() {
-        const plate = document.querySelector('.version-plate');
+      // --- 3. Аккордеон (обобщённый для любого количества версий) ---
+      function toggleVersionContent(plate) {
         const arrow = plate.querySelector('.version-arrow');
-        const content = document.getElementById('versionContent');
-
+        const content = plate.nextElementSibling;
         const isExpanded = plate.classList.contains('expanded');
 
         if (!isExpanded) {
           plate.classList.add('expanded');
           arrow.textContent = '▲';
-          content.classList.add('expanded'); // используем класс expanded вместо active для ясности
+          content.classList.add('active');
           setTimeout(() => {
             content.style.maxHeight = content.scrollHeight + 'px';
           }, 50);
         } else {
           plate.classList.remove('expanded');
           arrow.textContent = '▼';
-          content.classList.remove('expanded');
+          content.classList.remove('active');
           content.style.maxHeight = null;
         }
       }
@@ -422,194 +419,191 @@
         document.body.appendChild(overlay);
       }
 
-      // --- 5. ЛОГИКА ПРОСМОТРЩИКА: мультитач и драг только в полноэкранном режиме ---
-      let panX = 0;
-      let panY = 0;
-      let scale = 1;
-      let isDragging = false;
-      let lastX = 0;
-      let lastY = 0;
-      let initialDistance = 0;
-      let initialScale = 1;
-      let isFullscreen = false; // флаг полноэкранного режима
-      let fsElement = null;
+      // --- 5. ЛОГИКА ПРОСМОТРЩИКА (обобщённая, по data-viewer id) ---
+      const viewers = {}; // храним состояние каждого просмотрщика
 
-      function initViewer() {
-        const container = document.getElementById('viewerContainer');
-        const img = document.getElementById('modalImage');
+      function initViewer(vid) {
+        const container = document.querySelector(`[data-viewer="${vid}"]`);
+        const img = document.querySelector(`[data-viewer-img="${vid}"]`);
 
-        // Сбрасываем трансформации — в обычном режиме картинка всегда «как была»
-        panX = 0;
-        panY = 0;
-        scale = 1;
-        isFullscreen = false;
-        fsElement = null;
+        if (!container || !img) return;
+
+        viewers[vid] = {
+          panX: 0, panY: 0, scale: 1,
+          isDragging: false, lastX: 0, lastY: 0,
+          initialDistance: 0, initialScale: 1,
+          isFullscreen: false, fsElement: null,
+          container, img
+        };
 
         container.style.overflow = 'hidden';
-
         img.classList.remove('can-drag');
-        updateTransform();
+        updateTransform(vid);
 
-        // Удаляем старые слушатели, чтобы не дублировались
-        container.removeEventListener('wheel', handleWheel);
-        container.removeEventListener('mousedown', handleMouseDown);
-        window.removeEventListener('mouseup', handleMouseUp);
-        window.removeEventListener('mousemove', handleMouseMove);
+        // Удаляем старые слушатели через клонирование
+        const newContainer = container.cloneNode(true);
+        container.parentNode.replaceChild(newContainer, container);
+        const newImg = newContainer.querySelector('.viewer-image');
+        const newBtn = newContainer.querySelector('.fs-btn');
 
-        container.addEventListener('wheel', handleWheel, { passive: false });
-        container.addEventListener('mousedown', handleMouseDown);
-        window.addEventListener('mouseup', handleMouseUp);
-        window.addEventListener('mousemove', handleMouseMove);
+        // Переназначаем onclick на кнопке
+        newBtn.setAttribute('onclick', `toggleFullscreen('${vid}')`);
 
-        // Мультитач
-        container.removeEventListener('touchstart', handleTouchStart);
-        container.removeEventListener('touchmove', handleTouchMove, { passive: false });
-        window.removeEventListener('touchend', handleTouchEnd);
+        // Привязываем слушатели заново
+        newContainer.addEventListener('wheel', (e) => handleWheel(e, vid), { passive: false });
+        newContainer.addEventListener('mousedown', (e) => handleMouseDown(e, vid));
+        window.addEventListener('mouseup', () => handleMouseUp(vid));
+        window.addEventListener('mousemove', (e) => handleMouseMove(e, vid));
 
-        container.addEventListener('touchstart', handleTouchStart, { passive: false });
-        container.addEventListener('touchmove', handleTouchMove, { passive: false });
-        window.addEventListener('touchend', handleTouchEnd);
+        newContainer.addEventListener('touchstart', (e) => handleTouchStart(e, vid), { passive: false });
+        newContainer.addEventListener('touchmove', (e) => handleTouchMove(e, vid), { passive: false });
+        window.addEventListener('touchend', () => handleTouchEnd(vid));
+
+        // Обновляем ссылки
+        viewers[vid].container = newContainer;
+        viewers[vid].img = newImg;
       }
 
-      function handleWheel(e) {
-        if (!isFullscreen) return;
-
+      function handleWheel(e, vid) {
+        const v = viewers[vid];
+        if (!v || !v.isFullscreen) return;
         e.preventDefault();
         const delta = e.deltaY * -0.005;
-        const newScale = Math.max(0.1, Math.min(4, scale + delta));
-        scale = newScale;
-        updateTransform();
+        v.scale = Math.max(0.1, Math.min(4, v.scale + delta));
+        updateTransform(vid);
       }
 
-      function handleMouseDown(e) {
-        if (!isFullscreen) return;
-
-        isDragging = true;
-        lastX = e.clientX - panX;
-        lastY = e.clientY - panY;
-        const container = document.getElementById('viewerContainer');
-        container.style.cursor = 'grabbing';
+      function handleMouseDown(e, vid) {
+        const v = viewers[vid];
+        if (!v || !v.isFullscreen) return;
+        v.isDragging = true;
+        v.lastX = e.clientX - v.panX;
+        v.lastY = e.clientY - v.panY;
+        v.container.style.cursor = 'grabbing';
       }
 
-      function handleMouseUp() {
-        isDragging = false;
-        const container = document.getElementById('viewerContainer');
-        container.style.cursor = 'grab';
+      function handleMouseUp(vid) {
+        const v = viewers[vid];
+        if (!v) return;
+        v.isDragging = false;
+        if (v.container) v.container.style.cursor = 'grab';
       }
 
-      function handleMouseMove(e) {
-        if (!isDragging) return;
+      function handleMouseMove(e, vid) {
+        const v = viewers[vid];
+        if (!v || !v.isDragging) return;
         e.preventDefault();
-        panX = e.clientX - lastX;
-        panY = e.clientY - lastY;
-        updateTransform();
+        v.panX = e.clientX - v.lastX;
+        v.panY = e.clientY - v.lastY;
+        updateTransform(vid);
       }
 
-      // Мультитач логика (только в полноэкранном)
-      function handleTouchStart(e) {
-        if (!isFullscreen) return;
-
+      function handleTouchStart(e, vid) {
+        const v = viewers[vid];
+        if (!v || !v.isFullscreen) return;
         const touches = e.touches;
         if (touches.length >= 2) {
-          // Пинч (зум)
-          initialDistance = Math.hypot(
+          v.initialDistance = Math.hypot(
             touches[0].clientX - touches[1].clientX,
             touches[0].clientY - touches[1].clientY
           );
-          initialScale = scale;
+          v.initialScale = v.scale;
         } else if (touches.length === 1) {
-          // Одиночный тап — считаем как драг
-          lastX = touches[0].clientX - panX;
-          lastY = touches[0].clientY - panY;
-          isDragging = true;
+          v.lastX = touches[0].clientX - v.panX;
+          v.lastY = touches[0].clientY - v.panY;
+          v.isDragging = true;
         }
       }
 
-      function handleTouchMove(e) {
-        if (!isFullscreen) return;
-
-        e.preventDefault(); // Блокируем скролл страницы при мультитаче
+      function handleTouchMove(e, vid) {
+        const v = viewers[vid];
+        if (!v || !v.isFullscreen) return;
+        e.preventDefault();
         const touches = e.touches;
-
         if (touches.length >= 2) {
           const currentDistance = Math.hypot(
             touches[0].clientX - touches[1].clientX,
             touches[0].clientY - touches[1].clientY
           );
-
-          const scaleFactor = currentDistance / initialDistance;
-          const newScale = Math.max(0.1, Math.min(4, initialScale * scaleFactor));
-          scale = newScale;
-          updateTransform();
-        } else if (isDragging && touches.length === 1) {
-          panX = touches[0].clientX - lastX;
-          panY = touches[0].clientY - lastY;
-          updateTransform();
+          const scaleFactor = currentDistance / v.initialDistance;
+          v.scale = Math.max(0.1, Math.min(4, v.initialScale * scaleFactor));
+          updateTransform(vid);
+        } else if (v.isDragging && touches.length === 1) {
+          v.panX = touches[0].clientX - v.lastX;
+          v.panY = touches[0].clientY - v.lastY;
+          updateTransform(vid);
         }
       }
 
-      function handleTouchEnd() {
-        isDragging = false;
+      function handleTouchEnd(vid) {
+        const v = viewers[vid];
+        if (v) v.isDragging = false;
       }
 
-      function updateTransform() {
-        const img = document.getElementById('modalImage');
-        // Применяем трансформации только в полноэкранном режиме
-        if (isFullscreen) {
-          img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
-          img.classList.add('can-drag');
+      function updateTransform(vid) {
+        const v = viewers[vid];
+        if (!v) return;
+        if (v.isFullscreen) {
+          v.img.style.transform = `translate(${v.panX}px, ${v.panY}px) scale(${v.scale})`;
+          v.img.classList.add('can-drag');
         } else {
-          // В обычном режиме — всегда по центру, масштаб 1, сдвиг 0
-          img.style.transform = 'translate(0px, 0px) scale(1)';
-          img.classList.remove('can-drag');
+          v.img.style.transform = 'translate(0px, 0px) scale(1)';
+          v.img.classList.remove('can-drag');
         }
       }
 
       // --- 6. ПОЛНОЭКРАННЫЙ РЕЖИМ ---
-      function toggleFullscreen() {
-        const container = document.querySelector('.viewer-container');
-        if (!container) return;
+      function toggleFullscreen(vid) {
+        const v = viewers[vid];
+        if (!v) return;
+        const container = v.container;
 
-        if (!fsElement) {
+        if (!v.isFullscreen) {
           if (container.requestFullscreen) {
-            fsElement = container;
             container.requestFullscreen().then(() => {
-              isFullscreen = true;
-              updateTransform();
+              v.isFullscreen = true;
+              updateTransform(vid);
             }).catch(err => console.error(err));
           } else if (container.webkitRequestFullscreen) {
-            fsElement = container;
             container.webkitRequestFullscreen();
-            isFullscreen = true;
-            updateTransform();
+            v.isFullscreen = true;
+            updateTransform(vid);
           }
         } else {
           if (document.exitFullscreen) {
             document.exitFullscreen().then(() => {
-              isFullscreen = false;
-              fsElement = null;
-              updateTransform();
+              v.isFullscreen = false;
+              updateTransform(vid);
             });
           } else if (document.webkitExitFullscreen) {
             document.webkitExitFullscreen();
-            isFullscreen = false;
-            fsElement = null;
-            updateTransform();
+            v.isFullscreen = false;
+            updateTransform(vid);
           }
         }
       }
 
+      // Слушатели выхода из полноэкранного режима — сбрасываем все просмотрщики
       document.addEventListener('fullscreenchange', () => {
-        isFullscreen = !!document.fullscreenElement;
-        if (!isFullscreen) fsElement = null;
-        updateTransform();
+        const fsEl = document.fullscreenElement;
+        Object.keys(viewers).forEach(vid => {
+          const v = viewers[vid];
+          if (!fsEl || !v.container.contains(fsEl)) {
+            v.isFullscreen = false;
+          }
+          updateTransform(vid);
+        });
       });
       document.addEventListener('webkitfullscreenchange', () => {
-        isFullscreen = !!document.webkitFullscreenElement;
-        if (!isFullscreen) fsElement = null;
-        updateTransform();
+        const fsEl = document.webkitFullscreenElement;
+        Object.keys(viewers).forEach(vid => {
+          const v = viewers[vid];
+          if (!fsEl || !v.container.contains(fsEl)) {
+            v.isFullscreen = false;
+          }
+          updateTransform(vid);
+        });
       });
     </script>
   </body>
 </html>
-
