@@ -49,14 +49,10 @@
         display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.7rem;
       }
       .logo {
-        /* Убираем стили текста — теперь это контейнер для картинки */
         display: flex; align-items: center; min-width: 110px; flex: 1;
       }
       .logo img {
-        height: 36px; /* примерно высота текста 1.4rem при текущем масштабе */
-        width: auto;
-        display: block;
-        object-fit: contain;
+        height: 36px; width: auto; display: block; object-fit: contain;
       }
       nav ul { list-style: none; padding: 0; margin: 0; display: flex; gap: 0.7rem; flex-wrap: wrap; }
       nav a {
@@ -234,7 +230,7 @@
             <img src="N.jpg" alt="Node" class="team-img">
             <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#fff;">Node</span>
           </div>
-        </div>
+          </div>
       </section>
 
       <!-- ПРОЕКТЫ -->
@@ -425,7 +421,7 @@
         document.body.appendChild(overlay);
       }
 
-      // --- 5. ЛОГИКА ПРОСМОТРЩИКА (обобщённая, по data-viewer id) ---
+      // --- 5. ЛОГИКА ПРОСМОТРЩИКА (с ограничением масштабирования только в fullscreen) ---
       const viewers = {}; // храним состояние каждого просмотрщика
 
       function initViewer(vid) {
@@ -435,11 +431,18 @@
         if (!container || !img) return;
 
         viewers[vid] = {
-          panX: 0, panY: 0, scale: 1,
-          isDragging: false, lastX: 0, lastY: 0,
-          initialDistance: 0, initialScale: 1,
-          isFullscreen: false, fsElement: null,
-          container, img
+          panX: 0,
+          panY: 0,
+          scale: 1,
+          isDragging: false,
+          lastX: 0,
+          lastY: 0,
+          initialDistance: 0,
+          initialScale: 1,
+          isFullscreen: false,
+          fsElement: null,
+          container,
+          img
         };
 
         container.style.overflow = 'hidden';
@@ -479,10 +482,15 @@
       }
 
       function handleWheel(e, vid) {
-        e.preventDefault();
         const v = viewers[vid];
         if (!v) return;
 
+        // Масштабирование работает ТОЛЬКО в полноэкранном режиме
+        if (!v.isFullscreen) {
+          return; // игнорируем колёсико, если не на весь экран
+        }
+
+        e.preventDefault();
         const delta = e.deltaY || e.wheelDeltaY || 0;
         const zoomSpeed = 0.002;
         const newScale = Math.max(0.5, Math.min(3, v.scale - delta * zoomSpeed));
@@ -504,6 +512,12 @@
       function handleMouseDown(e, vid) {
         const v = viewers[vid];
         if (!v) return;
+
+        // Перетаскивание работает ТОЛЬКО в полноэкранном режиме
+        if (!v.isFullscreen) {
+          return;
+        }
+
         v.isDragging = true;
         v.lastX = e.clientX;
         v.lastY = e.clientY;
@@ -537,6 +551,11 @@
         const v = viewers[vid];
         if (!v) return;
 
+        // Тач-логика работает ТОЛЬКО в полноэкранном режиме
+        if (!v.isFullscreen) {
+          return;
+        }
+
         if (e.touches.length === 1) {
           // Обычный тап/перетаскивание
           v.isDragging = true;
@@ -556,6 +575,11 @@
       function handleTouchMove(e, vid) {
         const v = viewers[vid];
         if (!v) return;
+
+        // Если не в fullscreen — вообще не обрабатываем тач
+        if (!v.isFullscreen) {
+          return;
+        }
 
         if (e.touches.length === 1 && v.isDragging) {
           e.preventDefault();
@@ -586,12 +610,16 @@
           const centerX = (t0.clientX + t1.clientX) / 2;
           const centerY = (t0.clientY + t1.clientY) / 2;
 
-          const rect = v.container.getBoundingClientRect();
-          const x = centerX - rect.left;
-          const y = centerY - rect.top;
+                    const rect = v.container.getBoundingClientRect();
+          const offsetX = centerX - rect.left;
+          const offsetY = centerY - rect.top;
 
-          v.panX = x - (x - v.panX) * (newScale / v.scale);
-          v.panY = y - (y - v.panY) * (newScale / v.scale);
+          // Центрируем зум относительно середины пальцев
+          const scaleRatio = currentDistance / v.initialDistance;
+          const newScale = Math.max(0.5, Math.min(3, v.initialScale * scaleRatio));
+
+          v.panX = offsetX - (offsetX - v.panX) * scaleRatio;
+          v.panY = offsetY - (offsetY - v.panY) * scaleRatio;
           v.scale = newScale;
 
           updateTransform(vid);
@@ -607,25 +635,46 @@
         v.img.classList.remove('can-drag');
       }
 
-      // --- Fullscreen ---
+      // --- Полноэкранный режим ---
       function toggleFullscreen(vid) {
         const v = viewers[vid];
         if (!v) return;
 
-        if (v.isFullscreen) {
-          if (document.exitFullscreen) document.exitFullscreen();
-          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        if (!v.isFullscreen) {
+          // Включаем fullscreen
+          v.isFullscreen = true;
+          v.fsElement = v.container;
+          v.fsElement.style.position = 'fixed';
+          v.fsElement.style.top = '0';
+          v.fsElement.style.left = '0';
+          v.fsElement.style.width = '100vw';
+          v.fsElement.style.height = '100vh';
+          v.fsElement.style.zIndex = '5000';
+          v.fsElement.style.overflow = 'hidden';
+          v.fsElement.style.background = '#000';
+
+          document.body.style.overflow = 'hidden'; // блокируем скролл страницы
+        } else {
+          // Выключаем fullscreen
           v.isFullscreen = false;
-          v.fsElement = null;
-          return;
+          if (v.fsElement) {
+            v.fsElement.style.position = '';
+            v.fsElement.style.top = '';
+            v.fsElement.style.left = '';
+            v.fsElement.style.width = '';
+            v.fsElement.style.height = '';
+            v.fsElement.style.zIndex = '';
+            v.fsElement.style.overflow = '';
+            v.fsElement.style.background = '';
+          }
+          document.body.style.overflow = ''; // возвращаем скролл
+
+          // Сбрасываем позицию и масштаб для удобства
+          v.panX = 0;
+          v.panY = 0;
+          v.scale = 1;
+          updateTransform(vid);
         }
-
-        const container = v.container;
-        if (container.requestFullscreen) container.requestFullscreen();
-        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
-
-        v.isFullscreen = true;
-        v.fsElement = container;
       }
     </script>
   </body>
