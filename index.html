@@ -146,33 +146,23 @@
         padding: 1.4rem;
       }
 
-      /* ПРОСМОТРЩИК — ИСПРАВЛЕНО */
+      /* ПРОСМОТРЩИК */
       .viewer-container {
-        /* Убрали фиксированную высоту, сделали адаптивную */
-        width: 100%;
-        height: auto;                 /* Высота подстраивается под контент */
-        min-height: 240px;           /* Минимальная высота, чтобы не схлопывалось */
-        max-height: 420px;            /* Ограничение сверху, чтобы не было слишком большим */
-        background: #000;             /* Чёрный фон под картинку */
-        position: relative;
-        overflow: hidden;
-        border-radius: 8px;
-        margin: 1rem 0;
+        width: 100%; height: 420px; background: #000; position: relative;
+        overflow: hidden; border-radius: 8px; margin: 1rem 0;
       }
       .viewer-image {
-        width: 100%;                  /* Картинка занимает всю ширину контейнера */
-        height: auto;                 /* Высота вычисляется автоматически */
-        display: block;
-        image-rendering: auto;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block; image-rendering: auto;
         will-change: transform;
         user-select: none;
         -webkit-user-drag: none;
         draggable="false";
         cursor: default;
         transform-origin: center center;
-        /* Ключевое свойство: картинка всегда вписывается целиком */
-        object-fit: contain;          
-        /* Если нужно, чтобы картинка заполняла, но обрезалась — поставь object-fit: cover */
+        transform: translate(0, 0) scale(1);
       }
       .viewer-image.can-drag { cursor: grab; }
       .viewer-image.can-drag:active { cursor: grabbing; }
@@ -232,309 +222,389 @@
           <div class="team-member-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="openMemberModal('Ophiuchus', 'O.jpg')">
             <img src="O.jpg" alt="Ophiuchus" class="team-img">
             <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#fff;">Ophiuchus</span>
-        </div>
-
-        <!-- Участник 2 -->
-        <div class="team-member-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="openMemberModal('Node', 'N.jpg')">
-          <img src="N.jpg" alt="Node" class="team-img">
-          <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#fff;">Node</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ПРОЕКТЫ -->
-    <section id="projects">
-      <h2>Наши проекты</h2>
-
-      <!-- Проект: Тени города Реха -->
-      <article class="project-card" onclick="openProjectModal('Тени города Реха')">
-        <div class="card-header-row">
-          <h3 class="card-title">Тени города Реха</h3>
-          <span class="card-status status-dev">В разработке</span>
-        </div>
-        <div style="padding:1.4rem;">
-          <p style="color:#ccc; margin:0;">Мульт по вселенной «Тени города Реха». Работаем над пилотной сценой и системой теней как механики.</p>
-          <div style="margin-top:0.8rem; display:flex; gap:8px; flex-wrap:wrap;">
-            <span style="background:rgba(255,255,255,0.08); padding:4px 8px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85rem;">Blender (Eevee)</span>
-            <span style="background:rgba(255,255,255,0.08); padding:4px 8px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85rem;">Unity (URP)</span>
-            <span style="background:rgba(255,255,255,0.08); padding:4px 8px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85rem;">C#</span>
+          </div>
+          <!-- Участник 2 -->
+          <div class="team-member-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="openMemberModal('Node', 'N.jpg')">
+            <img src="N.jpg" alt="Node" class="team-img">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#fff;">Node</span>
           </div>
         </div>
-      </article>
-    </section>
-  </main>
+      </section>
 
-  <!-- МОДАЛЬНОЕ ОКНО ПРОЕКТА -->
-  <div class="modal-overlay" id="projectModalOverlay">
-    <div class="modal-window">
-      <div class="modal-header">
-        <h3 class="modal-title" id="modalProjectTitle">Название проекта</h3>
-        <button class="close-modal" onclick="closeProjectModal()">&times;</button>
-      </div>
+          <!-- ПРОЕКТЫ -->
+      <section id="projects">
+        <h2>Наши проекты</h2>
 
-      <!-- Версия 30.08.2026 -->
-      <div class="version-plate" onclick="toggleVersionContent(this)">
-        <span>Версия 30.08.2026</span>
-        <span class="version-arrow">▼</span>
-      </div>
-      <div class="expanded-content">
-        <div class="viewer-container" data-viewer="v1">
-          <img src="" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v1">
-          <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v1')">
-            <img src="R.png" alt="Развернуть" class="fs-icon">
-          </button>
+        <!-- Проект: Тени города Реха -->
+        <article class="project-card" onclick="openProjectModal('Тени города Реха')">
+          <div class="card-header-row">
+            <h3 class="card-title">Тени города Реха</h3>
+            <span class="card-status status-dev">В разработке</span>
+          </div>
+        </article>
+
+      </section>
+    </main>
+
+    <!-- МОДАЛЬНОЕ ОКНО ПРОЕКТА (две версии, каждая со своим аккордеоном и просмотрщиком) -->
+      <div class="modal-overlay" id="projectModalOverlay">
+        <div class="modal-window">
+          <div class="modal-header">
+            <h3 class="modal-title" id="modalProjectTitle">Название проекта</h3>
+            <button class="close-modal" onclick="closeProjectModal()">&times;</button>
+          </div>
+
+          <!-- Версия 30.08.2026 -->
+          <div class="version-plate" onclick="toggleVersionContent(this)">
+            <span>Версия 30.08.2026</span>
+            <span class="version-arrow">▼</span>
+          </div>
+          <div class="expanded-content">
+            <div class="viewer-container" data-viewer="v1">
+              <img src="" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v1">
+              <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v1')">
+                <img src="R.png" alt="Развернуть" class="fs-icon">
+              </button>
+            </div>
+            <p class="modal-desc" id="modalDescV1"></p>
+            <p class="modal-tools" id="modalToolsV1"></p>
+          </div>
+
+          <!-- Версия 06.09.2026 -->
+          <div class="version-plate" onclick="toggleVersionContent(this)">
+            <span>Версия 06.09.2026</span>
+            <span class="version-arrow">▼</span>
+          </div>
+          <div class="expanded-content">
+            <div class="viewer-container" data-viewer="v2">
+              <img src="" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v2">
+              <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v2')">
+                <img src="R.png" alt="Развернуть" class="fs-icon">
+              </button>
+            </div>
+            <p class="modal-desc" id="modalDescV2"></p>
+            <p class="modal-tools" id="modalToolsV2"></p>
+          </div>
         </div>
-        <p class="modal-desc" id="modalDescV1"></p>
-        <p class="modal-tools" id="modalToolsV1"></p>
       </div>
 
-      <!-- Версия 06.09.2026 -->
-      <div class="version-plate" onclick="toggleVersionContent(this)">
-        <span>Версия 06.09.2026</span>
-        <span class="version-arrow">▼</span>
-      </div>
-      <div class="expanded-content">
-        <div class="viewer-container" data-viewer="v2">
-          <img src="" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v2">
-          <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v2')">
-            <img src="R.png" alt="Развернуть" class="fs-icon">
-          </button>
-        </div>
-        <p class="modal-desc" id="modalDescV2"></p>
-        <p class="modal-tools" id="modalToolsV2"></p>
-      </div>
-    </div>
-  </div>
+      <!-- МОДАЛЬНОЕ ОКНО УЧАСТНИКА -->
+      <div class="modal-overlay" id="memberModalOverlay"></div>
 
-  <!-- МОДАЛЬНОЕ ОКНО УЧАСТНИКА -->
-  <div class="modal-overlay" id="memberModalOverlay"></div>
+      <footer>
+        <p>&copy; 2026 BU3DC#.</p>
+      </footer>
 
-  <footer>
-    <p>&copy; 2026 BU3DC#.</p>
-  </footer>
-
-  <script>
-    // --- 1. Интро ---
-    const intro = document.getElementById('intro');
-    if (intro) {
-      intro.addEventListener('animationend', () => {
-        intro.style.display = 'none';
-        intro.style.pointerEvents = 'none';
-      });
-    }
-
-    // --- 2. Модальное окно проекта ---
-    function openProjectModal(title) {
-      const overlay = document.getElementById('projectModalOverlay');
-      document.getElementById('modalProjectTitle').textContent = title;
-
-      // Данные версии 1
-      const imgV1 = document.querySelector('[data-viewer-img="v1"]');
-      imgV1.src = 'B 26.07.2026.png';
-      document.getElementById('modalDescV1').textContent =
-        'Пока не скажу, что это и не раскрою сюжет, но скажу, что начал делать первую сцену архива (на фото один из этапов).';
-      document.getElementById('modalToolsV1').textContent = 'Инструменты: Blender (Eevee), Unity (URP), C#';
-
-      // Данные версии 2
-      const imgV2 = document.querySelector('[data-viewer-img="v2"]');
-      imgV2.src = 'Снимок экрана 2026-09-06 225507.png';
-      document.getElementById('modalDescV2').textContent = 'А вот и архивист! (предварительная версия)';
-      document.getElementById('modalToolsV2').textContent = 'Инструменты: Blender, C# скрипты';
-
-      // Сброс всех аккордеонов
-      document.querySelectorAll('.version-plate').forEach(plate => {
-        plate.classList.remove('expanded');
-        const arrow = plate.querySelector('.version-arrow');
-        if (arrow) arrow.textContent = '▼';
-      });
-      document.querySelectorAll('.expanded-content').forEach(c => {
-        c.classList.remove('active');
-        c.style.maxHeight = null;
-      });
-
-      overlay.classList.add('active');
-
-      // Инициализация обоих просмотрщиков
-      initViewer('v1');
-      initViewer('v2');
-    }
-
-    function closeProjectModal() {
-      document.getElementById('projectModalOverlay').classList.remove('active');
-    }
-
-    document.getElementById('projectModalOverlay').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeProjectModal();
-    });
-
-    // --- 3. Аккордеон (обобщённый для любого количества версий) ---
-    function toggleVersionContent(plate) {
-      const arrow = plate.querySelector('.version-arrow');
-      const content = plate.nextElementSibling;
-      const isExpanded = plate.classList.contains('expanded');
-
-      if (!isExpanded) {
-        plate.classList.add('expanded');
-        arrow.textContent = '▲';
-        content.classList.add('active');
-        setTimeout(() => {
-          content.style.maxHeight = content.scrollHeight + 'px';
-        }, 50);
-      } else {
-        plate.classList.remove('expanded');
-        arrow.textContent = '▼';
-        content.classList.remove('active');
-        content.style.maxHeight = null;
-      }
-    }
-
-    // --- 4. Модальное окно участника ---
-    function openMemberModal(name, imgSrc) {
-      const existing = document.getElementById('memberModalOverlay');
-      if (existing) existing.remove();
-
-      const overlay = document.createElement('div');
-      overlay.id = 'memberModalOverlay';
-      overlay.style.cssText = `
-        position:fixed; top:0; left:0; right:0; bottom:0;
-        background:rgba(0,0,0,0.92); z-index:3000;
-        display:flex; justify-content:center; align-items:center;
-        padding:20px;
-      `;
-      overlay.addEventListener('click', () => overlay.remove());
-
-      const modal = document.createElement('div');
-      modal.style.cssText = `
-        background:var(--panel); border:1px solid var(--border);
-        border-radius:16px; overflow:hidden;
-        box-shadow:0 32px 64px rgba(0,0,0,0.5);
-        max-width:90vw; max-height:90vh;
-        display:flex; flex-direction:column;
-      `;
-
-      const header = document.createElement('div');
-      header.style.cssText = 'padding:1.2rem 1.4rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;';
-      
-      const title = document.createElement('h3');
-      title.textContent = name;
-      title.style.cssText = 'margin:0; color:#fff; font-family:\'JetBrains Mono\',monospace;';
-
-      const closeBtn = document.createElement('button');
-      closeBtn.textContent = '×';
-      closeBtn.style.cssText = 'background:none; border:none; color:#8f8f96; cursor:pointer; font-size:1.5rem;';
-      closeBtn.onclick = () => overlay.remove();
-
-      header.appendChild(title);
-      header.appendChild(closeBtn);
-      modal.appendChild(header);
-
-      const body = document.createElement('div');
-      body.style.cssText = 'padding:1.4rem; color:#e3e3e8; line-height:1.6;';
-      body.innerHTML = `
-        <p><strong>Роль в команде:</strong> <span style="color:${getRandomAccent()}">${getRoleFor(name)}</span></p>
-        <p>Занимаюсь 3D, анимацией и скриптами. Люблю экспериментировать с шейдерами и физикой частиц.</p>
-        <p style="font-size:0.9rem; color:#8f8f96; margin-top:1rem;">
-          Основной стек: Blender, Unity, C#, Eevee, Geonodes, Particle Systems.
-        </p>
-      `;
-
-      modal.appendChild(body);
-      overlay.appendChild(modal);
-      document.body.appendChild(overlay);
-    }
-
-    function getRoleFor(name) {
-      if (name === 'Ophiuchus') return '3D / Арт / Анимация';
-      if (name === 'Node') return 'Программирование / Логика / Инструменты';
-      return 'Инди-разработчик';
-    }
-
-    function getRandomAccent() {
-      const colors = ['#ff5252', '#00d2ff', '#a6ff7a', '#f48fb1'];
-      return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    // --- 5. Просмотрщик с зумом и панорамированием ---
-    let viewers = {};
-
-    function initViewer(id) {
-      const container = document.querySelector(`.viewer-container[data-viewer="${id}"]`);
-      const img = container.querySelector('.viewer-image');
-      
-      let panX = 0, panY = 0, scale = 1;
-      let isDragging = false, startX, startY;
-      let initialDistance = 0, initialScale = 1;
-
-      function updateTransform() {
-        img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
-      }
-
-      function onWheel(e) {
-        e.preventDefault();
-        const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        const newScale = Math.max(0.5, Math.min(3, scale + delta));
-        scale = newScale;
-        updateTransform();
-      }
-
-      function onMouseDown(e) {
-        isDragging = true;
-        startX = e.clientX - panX;
-        startY = e.clientY - panY;
-        container.style.cursor = 'grabbing';
-        img.classList.add('can-drag');
-      }
-
-      function onMouseMove(e) {
-        if (!isDragging) return;
-        e.preventDefault();
-        panX = e.clientX - startX;
-        panY = e.clientY - startY;
-        updateTransform();
-      }
-
-      function onMouseUp() {
-        isDragging = false;
-        container.style.cursor = '';
-        img.classList.remove('can-drag');
-      }
-
-      function handleTouch(e) {
-        const touches = e.touches;
-        if (touches.length === 2) {
-          const dx = touches[0].clientX - touches[1].clientX;
-          const dy = touches[0].clientY - touches[1].clientY;
-          const distance = Math.hypot(dx, dy);
-          if (initialDistance === 0) {
-            initialDistance = distance;
-            initialScale = scale;
-          }
-          const ratio = distance / initialDistance;
-          scale = Math.max(0.5, Math.min(3, initialScale * ratio));
-          updateTransform();
+      <script>
+        // --- 1. Интро ---
+        const intro = document.getElementById('intro');
+        if (intro) {
+          intro.addEventListener('animationend', () => {
+            intro.style.display = 'none';
+            intro.style.pointerEvents = 'none';
+          });
         }
-      }
 
-      container.addEventListener('wheel', onWheel, { passive: false });
-      container.addEventListener('mousedown', onMouseDown);
-      window.addEventListener('mouseup', onMouseUp);
-      window.addEventListener('mousemove', onMouseMove);
-      container.addEventListener('touchstart', handleTouch);
-      container.addEventListener('touchmove', handleTouch);
+        // --- 2. Модальное окно проекта ---
+        function openProjectModal(title) {
+          const overlay = document.getElementById('projectModalOverlay');
+          document.getElementById('modalProjectTitle').textContent = title;
 
-      viewers[id] = { panX, panY, scale, initialDistance, initialScale };
-    }
+          // Данные версии 1
+          const imgV1 = document.querySelector('[data-viewer-img="v1"]');
+          imgV1.src = 'B 26.07.2026.png';
+          document.getElementById('modalDescV1').textContent =
+            'Пока не скажу, что это и не раскрою сюжет, но скажу, что начал делать первую сцену архива (на фото один из этапов).';
+          document.getElementById('modalToolsV1').textContent = 'Инструменты: Blender';
 
-    function toggleFullscreen(id) {
-      const container = document.querySelector(`.viewer-container[data-viewer="${id}"]`);
-      if (!container) return;
+          // Данные версии 2
+          const imgV2 = document.querySelector('[data-viewer-img="v2"]');
+          imgV2.src = 'Снимок экрана 2026-09-06 225507.png';
+          document.getElementById('modalDescV2').textContent = 'А вот и архивист! (предварительная версия)';
+          document.getElementById('modalToolsV2').textContent = 'Инструменты: Blender';
 
-      if (!document.fullscreenElement) {
-        container.requestFullscreen().catch(err => console.log(`Error attempting fullscreen: ${err.message}`));
-      } else {
-        document.exitFullscreen();
-      }
-    }
-  </script>
-</body>
+          // Сброс всех аккордеонов
+          document.querySelectorAll('.version-plate').forEach(plate => {
+            plate.classList.remove('expanded');
+            const arrow = plate.querySelector('.version-arrow');
+            if (arrow) arrow.textContent = '▼';
+          });
+          document.querySelectorAll('.expanded-content').forEach(c => {
+            c.classList.remove('active');
+            c.style.maxHeight = null;
+          });
+
+          overlay.classList.add('active');
+
+          // Инициализация обоих просмотрщиков
+          initViewer('v1');
+          initViewer('v2');
+        }
+
+        function closeProjectModal() {
+          document.getElementById('projectModalOverlay').classList.remove('active');
+        }
+
+        document.getElementById('projectModalOverlay').addEventListener('click', (e) => {
+          if (e.target === e.currentTarget) closeProjectModal();
+        });
+
+        // --- 3. Аккордеон (обобщённый для любого количества версий) ---
+        function toggleVersionContent(plate) {
+          const arrow = plate.querySelector('.version-arrow');
+          const content = plate.nextElementSibling;
+          const isExpanded = plate.classList.contains('expanded');
+
+          if (!isExpanded) {
+            plate.classList.add('expanded');
+            arrow.textContent = '▲';
+            content.classList.add('active');
+            setTimeout(() => {
+              content.style.maxHeight = content.scrollHeight + 'px';
+            }, 50);
+          } else {
+            plate.classList.remove('expanded');
+            arrow.textContent = '▼';
+            content.classList.remove('active');
+            content.style.maxHeight = null;
+          }
+        }
+
+        // --- 4. Модальное окно участника ---
+        function openMemberModal(name, imgSrc) {
+          const existing = document.getElementById('memberModalOverlay');
+          if (existing) existing.remove();
+
+          const overlay = document.createElement('div');
+          overlay.id = 'memberModalOverlay';
+          overlay.style.cssText = `
+            position:fixed; top:0; left:0; right:0; bottom:0;
+            background:rgba(0,0,0,0.92); z-index:3000;
+            display:flex; justify-content:center; align-items:center;
+            padding:20px;
+          `;
+          overlay.addEventListener('click', () => overlay.remove());
+
+          const modal = document.createElement('div');
+          modal.style.cssText = `
+            background:var(--panel); border:1px solid var(--border);
+            border-radius:16px; overflow:hidden;
+            box-shadow:0 32px 64px rgba(0,0,0,0.5);
+            max-width:90vw; max-height:90vh;
+            display:flex; flex-direction:column;
+          `;
+
+          const header = document.createElement('div');
+          header.style.cssText = `padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;`;
+
+          const h3 = document.createElement('h3');
+          h3.textContent = name;
+          h3.style.cssText = `margin:0; color:#fff; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:1.3rem;`;
+
+          const closeBtn = document.createElement('button');
+          closeBtn.textContent = '×';
+          closeBtn.style.cssText = `background:none; border:none; color:var(--muted); cursor:pointer; font-size:1.4rem; line-height:1; padding:0;`;
+          closeBtn.addEventListener('click', () => overlay.remove());
+
+          header.appendChild(h3);
+          header.appendChild(closeBtn);
+          modal.appendChild(header);
+
+          const img = document.createElement('img');
+          img.src = imgSrc;
+          img.alt = name;
+          img.style.cssText = `width:100%; height:auto; max-height:60vh; object-fit:contain; display:block;`;
+          modal.appendChild(img);
+
+          overlay.appendChild(modal);
+          document.body.appendChild(overlay);
+        }
+
+        // --- 5. ЛОГИКА ПРОСМОТРЩИКА (обобщённая, по data-viewer id) ---
+        const viewers = {}; // храним состояние каждого просмотрщика
+
+        function initViewer(vid) {
+          const container = document.querySelector(`[data-viewer="${vid}"]`);
+          const img = document.querySelector(`[data-viewer-img="${vid}"]`);
+
+          if (!container || !img) return;
+
+          viewers[vid] = {
+            panX: 0, panY: 0, scale: 1,
+            isDragging: false, lastX: 0, lastY: 0,
+            initialDistance: 0, initialScale: 1,
+            isFullscreen: false, fsElement: null,
+            container, img
+          };
+
+          container.style.overflow = 'hidden';
+          img.classList.remove('can-drag');
+          updateTransform(vid);
+
+          // Удаляем старые слушатели через клонирование
+          const newContainer = container.cloneNode(true);
+          container.parentNode.replaceChild(newContainer, container);
+          const newImg = newContainer.querySelector('.viewer-image');
+          const newBtn = newContainer.querySelector('.fs-btn');
+
+          // Переназначаем onclick на кнопке
+          newBtn.setAttribute('onclick', `toggleFullscreen('${vid}')`);
+
+          // Привязываем слушатели заново
+          newContainer.addEventListener('wheel', (e) => handleWheel(e, vid), { passive: false });
+          newContainer.addEventListener('mousedown', (e) => handleMouseDown(e, vid));
+          window.addEventListener('mouseup', () => handleMouseUp(vid));
+          window.addEventListener('mousemove', (e) => handleMouseMove(e, vid));
+
+          newContainer.addEventListener('touchstart', (e) => handleTouchStart(e, vid), { passive: false });
+          newContainer.addEventListener('touchmove', (e) => handleTouchMove(e, vid), { passive: false });
+          window.addEventListener('touchend', () => handleTouchEnd(vid));
+
+          // Обновляем ссылки
+          viewers[vid].container = newContainer;
+          viewers[vid].img = newImg;
+        }
+
+        function handleWheel(e, vid) {
+          const v = viewers[vid];
+          if (!v || !v.isFullscreen) return;
+          e.preventDefault();
+          const delta = e.deltaY * -0.005;
+          v.scale = Math.max(0.1, Math.min(4, v.scale + delta));
+          updateTransform(vid);
+        }
+
+        function handleMouseDown(e, vid) {
+          const v = viewers[vid];
+          if (!v || !v.isFullscreen) return;
+          v.isDragging = true;
+          v.lastX = e.clientX - v.panX;
+          v.lastY = e.clientY - v.panY;
+          v.container.style.cursor = 'grabbing';
+        }
+
+        function handleMouseUp(vid) {
+          const v = viewers[vid];
+          if (!v) return;
+          v.isDragging = false;
+          if (v.container) v.container.style.cursor = 'grab';
+        }
+
+        function handleMouseMove(e, vid) {
+          const v = viewers[vid];
+          if (!v || !v.isDragging) return;
+          e.preventDefault();
+          v.panX = e.clientX - v.lastX;
+          v.panY = e.clientY - v.lastY;
+          updateTransform(vid);
+        }
+
+        function handleTouchStart(e, vid) {
+          const v = viewers[vid];
+          if (!v || !v.isFullscreen) return;
+          const touches = e.touches;
+          if (touches.length >= 2) {
+            v.initialDistance = Math.hypot(
+              touches[0].clientX - touches[1].clientX,
+              touches[0].clientY - touches[1].clientY
+            );
+            v.initialScale = v.scale;
+          } else if (touches.length === 1) {
+            v.lastX = touches[0].clientX - v.panX;
+            v.lastY = touches[0].clientY - v.panY;
+            v.isDragging = true;
+          }
+        }
+
+        function handleTouchMove(e, vid) {
+          const v = viewers[vid];
+          if (!v || !v.isFullscreen) return;
+          e.preventDefault();
+          const touches = e.touches;
+          if (touches.length >= 2) {
+            const currentDistance = Math.hypot(
+              touches[0].clientX - touches[1].clientX,
+              touches[0].clientY - touches[1].clientY
+            );
+            const scaleFactor = currentDistance / v.initialDistance;
+            v.scale = Math.max(0.1, Math.min(4, v.initialScale * scaleFactor));
+            updateTransform(vid);
+          } else if (v.isDragging && touches.length === 1) {
+            v.panX = touches[0].clientX - v.lastX;
+            v.panY = touches[0].clientY - v.lastY;
+            updateTransform(vid);
+          }
+        }
+
+        function handleTouchEnd(vid) {
+          const v = viewers[vid];
+          if (v) v.isDragging = false;
+        }
+
+        function updateTransform(vid) {
+          const v = viewers[vid];
+          if (!v) return;
+          if (v.isFullscreen) {
+            v.img.style.transform = `translate(${v.panX}px, ${v.panY}px) scale(${v.scale})`;
+            v.img.classList.add('can-drag');
+          } else {
+            v.img.style.transform = 'translate(0px, 0px) scale(1)';
+            v.img.classList.remove('can-drag');
+          }
+        }
+
+        // --- 6. ПОЛНОЭКРАННЫЙ РЕЖИМ ---
+        function toggleFullscreen(vid) {
+          const v = viewers[vid];
+          if (!v) return;
+          const container = v.container;
+
+          if (!v.isFullscreen) {
+            if (container.requestFullscreen) {
+              container.requestFullscreen().then(() => {
+                v.isFullscreen = true;
+                updateTransform(vid);
+              }).catch(err => console.error(err));
+            } else if (container.webkitRequestFullscreen) {
+              container.webkitRequestFullscreen();
+              v.isFullscreen = true;
+              updateTransform(vid);
+            }
+          } else {
+            if (document.exitFullscreen) {
+              document.exitFullscreen().then(() => {
+                v.isFullscreen = false;
+                updateTransform(vid);
+              });
+            } else if (document.webkitExitFullscreen) {
+              document.webkitExitFullscreen();
+              v.isFullscreen = false;
+              updateTransform(vid);
+            }
+          }
+        }
+
+        // Слушатели выхода из полноэкранного режима — сбрасываем все просмотрщики
+        document.addEventListener('fullscreenchange', () => {
+          const fsEl = document.fullscreenElement;
+          Object.keys(viewers).forEach(vid => {
+            const v = viewers[vid];
+            if (!fsEl || !v.container.contains(fsEl)) {
+              v.isFullscreen = false;
+            }
+            updateTransform(vid);
+          });
+        });
+        document.addEventListener('webkitfullscreenchange', () => {
+          const fsEl = document.webkitFullscreenElement;
+          Object.keys(viewers).forEach(vid => {
+            const v = viewers[vid];
+            if (!fsEl || !v.container.contains(fsEl)) {
+              v.isFullscreen = false;
+            }
+            updateTransform(vid);
+          });
+        });
+      </script>
+    </body>
 </html>
