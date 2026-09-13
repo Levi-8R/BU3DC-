@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
+    <title>BU3DC# — инди команда</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-dark: #0b0b0d;
+        --panel: #131318;
+        --text: #e3e3e8;
+        --muted: #8f8f96;
+        --accent: #ff5252;
+        --border: #222228;
+        --btn-bg: #1a1a20;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-padding-top: 75px; scroll-behavior: smooth; }
+      body {
+        margin: 0; padding: 0; background: var(--bg-dark); color: var(--text);
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.5; overflow-x: hidden;
+      }
+
+      /* INTRO */
+      #intro {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+        background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; pointer-events: none;
+      }
+      .intro-text {
+        font-family: 'JetBrains Mono', monospace; font-weight: 700;
+        font-size: clamp(3rem, 12vw, 8rem); color: #fff; letter-spacing: 2px;
+        text-shadow: 0 0 20px rgba(255, 82, 82, 0.6); opacity: 0; animation: fadeInOut 1.8s forwards;
+      }
+      @keyframes fadeInOut {
+        0% { opacity: 0; transform: scale(0.9); }
+        15% { opacity: 1; transform: scale(1.05); }
+        85% { opacity: 1; transform: scale(1.05); }
+        100% { opacity: 0; transform: scale(0.85); }
+      }
+
+      /* HEADER */
+      header {
+        background: rgba(12, 12, 16, 0.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        padding: 0.5rem 1rem; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.7rem;
+      }
+      .logo {
+        /* Убрали текст, теперь здесь будет картинка */
+        flex: 1; min-width: 110px; display: flex; align-items: center;
+      }
+      .logo img {
+        height: calc(1.7 * 1.4rem); /* примерно в 1.7 раза больше прежнего текста 1.4rem */
+        display: block;
+      }
+      nav ul { list-style: none; padding: 0; margin: 0; display: flex; gap: 0.7rem; flex-wrap: wrap; }
+      nav a {
+        display: inline-block; padding: 0.4rem 0.8rem; background: var(--btn-bg); border: 1px solid var(--border);
+        color: #ffffff; text-decoration: none; font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;
+        transition: all 0.25s ease; white-space: nowrap;
+      }
+      nav a:hover { background: rgba(255,255,255,0.06); transform: translateY(-1px); }
+
+      main { max-width: 1140px; margin: 1rem auto; padding: 0 1rem; }
+      section { scroll-margin-top: 75px; }
+      h2 {
+        font-size: 2rem; border-left: 6px solid var(--accent); padding-left: 1rem;
+        margin-bottom: 2.2rem; color: #fff;
+      }
+
+      .project-card {
+        background: var(--panel); border: 1px solid var(--border); margin-bottom: 1.8rem;
+        border-radius: 12px; cursor: pointer; display: flex; flex-direction: column;
+        transition: transform 0.3s cubic-bezier(0.17, 0.67, 0.12, 0.99), box-shadow 0.3s ease;
+      }
+      .project-card:hover { transform: translateY(-6px); box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5); }
+      .card-header-row {
+        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+        gap: 0.7rem; padding: 1.2rem 1.4rem; border-bottom: 1px solid var(--border);
+      }
+      .card-title { margin: 0; color: #fff; font-size: 1.45rem; font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+      .card-status {
+        font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; padding: 0.35rem 0.7rem;
+        border-radius: 6px; color: #fff; background: rgba(255,255,255,0.08);
+      }
+      .card-status.status-dev { background: rgba(255, 82, 82, 0.15); color: var(--accent); }
+
+      .team-member-card {
+        display: flex; align-items: center; gap: 12px; cursor: pointer;
+        transition: transform 0.3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+      }
+      .team-member-card:hover { transform: translateY(-4px); }
+      .team-img {
+        width: 64px; height: 64px; object-fit: cover; border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .team-member-card:hover .team-img { transform: scale(1.1); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+
+      /* МОДАЛЬНОЕ ОКНО */
+      .modal-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.92); z-index: 2000; display: none;
+        justify-content: center; align-items: center; padding: 20px;
+      }
+      .modal-overlay.active { display: flex; }
+      .modal-window {
+        background: var(--panel); border: 1px solid var(--border); width: 100%; max-width: 800px;
+        border-radius: 16px; overflow: hidden; box-shadow: 0 32px 64px rgba(0,0,0,0.5);
+        animation: popIn 0.3s cubic-bezier(0.2, 0, 0.3, 1); display: flex; flex-direction: column; max-height: 90vh;
+      }
+      @keyframes popIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+      .modal-header {
+        padding: 1.2rem 1.4rem; border-bottom: 1px solid var(--border);
+        display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+      }
+      .modal-title {
+        margin: 0; color: #fff; font-family: 'JetBrains Mono', monospace;
+        font-size: 1.3rem; font-weight: 700;
+      }
+      .close-modal {
+        background: none; border: none; color: var(--muted); cursor: pointer;
+        font-size: 1.4rem; line-height: 1; padding: 0.2rem;
+      }
+      .close-modal:hover { color: #fff; }
+
+      /* АККОРДЕОН ВЕРСИИ */
+      .version-plate {
+        background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: #fff;
+        padding: 1rem 1.4rem; display: flex; justify-content: space-between;
+        align-items: center; cursor: pointer; user-select: none;
+        font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: 700; transition: background 0.2s;
+      }
+      .version-plate:hover { background: rgba(255,255,255,0.08); }
+      .version-arrow { transition: transform 0.2s ease; }
+      .version-plate.expanded .version-arrow { transform: rotate(180deg); }
+
+      .expanded-content {
+        max-height: 0; 
+        overflow-y: auto;
+        transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s;
+        background: rgba(19, 19, 24, 0.4);
+        padding: 0;
+      }
+      .expanded-content.active {
+        max-height: 500px;
+        padding: 1.4rem;
+      }
+
+      /* ПРОСМОТРЩИК */
+      .viewer-container {
+        width: 100%; height: auto; background: #000; position: relative;
+        overflow: hidden; border-radius: 8px; margin: 1rem 0;
+      }
+      .viewer-container:fullscreen,
+      .viewer-container:-webkit-full-screen {
+        height: 100vh;
+      }
+      .viewer-image {
+        width: 100%;
+        height: auto;
+        display: block; image-rendering: auto;
+        will-change: transform;
+        user-select: none;
+        -webkit-user-drag: none;
+        cursor: default;
+        transform-origin: center center;
+        transform: translate(0, 0) scale(1);
+      }
+      .viewer-container:fullscreen .viewer-image,
+      .viewer-container:-webkit-full-screen .viewer-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .viewer-image.can-drag { cursor: grab; }
+      .viewer-image.can-drag:active { cursor: grabbing; }
+
+      .fs-btn {
+        position: absolute; bottom: 12px; right: 12px; z-index: 10;
+        width: 40px; height: 40px; background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; padding: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .fs-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4); }
+      .fs-icon { width: 24px; height: 24px; object-fit: contain; display: block; }
+
+      .modal-desc { color: #fff; font-size: 1rem; line-height: 1.55; margin-bottom: 1.2rem; }
+      .modal-tools { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+
+      footer {
+        padding: 3rem 1rem; text-align: center; border-top: 1px solid var(--border);
+        color: var(--muted); font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- INTRO -->
+    <div id="intro"><div class="intro-text">BU3DC#</div></div>
+
+    <!-- HEADER -->
+    <header>
+      <div class="logo">
+        <img src="Лого.jpg" alt="BU3DC#" />
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#about">О нас</a></li>
+          <li><a href="#projects">Наши проекты</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <!-- О НАС -->
+      <section id="about">
+        <h2>О нас</h2>
+        <p><strong>BU3DC#</strong> — инди‑команда, делаем 3D и анимации. Экспериментируем, выкладываем наработки, показываем процесс.</p>
+        <p>Что значит название:</p>
+        <ul style="padding-left: 1.2rem;">
+          <li><strong>B — Blender:</strong> все наши 3D‑штуки.</li>
+          <li><strong>U — Unity:</strong> интерактивность.</li>
+          <li><strong>3D:</strong> объём, свет, ракурсы, движение.</li>
+          <li><strong>C#:</strong> язык логики в Unity.</li>
+        </ul>
+        <p>Мы небольшая команда, много пробуем. Всё выкладываем здесь, чтобы было видно, как из набросков получается что‑то своё.</p>
+
+        <h3><strong>В состав команды входят:</strong></h3>
+        <div style="display:flex; flex-direction:column; gap:16px; max-width:320px;">
+          <!-- Участник 1 -->
+          <div class="team-member-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="openMemberModal('Ophiuchus', 'O.jpg')">
+            <img src="O.jpg" alt="Ophiuchus" class="team-img">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#fff;">Ophiuchus</span>
+          </div>
+          <!-- Участник 2 -->
+          <div class="team-member-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="openMemberModal('Node', 'N.jpg')">
+            <img src="N.jpg" alt="Node" class="team-img">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#fff;">Node</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ПРОЕКТЫ -->
+      <section id="projects">
+        <h2>Наши проекты</h2>
+
+        <!-- Проект: Тени города Рэха -->
+                <article class="project-card" onclick="openProjectModal('Тени города Рэха')">
+          <div class="card-header-row">
+            <h3 class="card-title">Тени города Рэха</h3>
+            <span class="card-status status-dev">В разработке</span>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <!-- МОДАЛЬНОЕ ОКНО ПРОЕКТА (две версии, каждая со своим аккордеоном и просмотрщиком) -->
+    <div class="modal-overlay" id="projectModalOverlay">
+      <div class="modal-window">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modalProjectTitle">Название проекта</h3>
+          <button class="close-modal" onclick="closeProjectModal()">&times;</button>
+        </div>
+
+        <!-- Версия 30.08.2026 -->
+        <div class="version-plate" onclick="toggleVersionContent(this)">
+          <span>Версия 30.08.2026</span>
+          <span class="version-arrow">▼</span>
+        </div>
+        <div class="expanded-content">
+          <div class="viewer-container" data-viewer="v1">
+            <img src="B 30.08.2026.png" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v1">
+            <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v1')">
+              <img src="R.png" alt="Развернуть" class="fs-icon">
+            </button>
+          </div>
+          <p class="modal-desc" id="modalDescV1"></p>
+          <p class="modal-tools" id="modalToolsV1"></p>
+        </div>
+
+        <!-- Версия 06.09.2026 -->
+        <div class="version-plate" onclick="toggleVersionContent(this)">
+          <span>Версия 06.09.2026</span>
+          <span class="version-arrow">▼</span>
+        </div>
+        <div class="expanded-content">
+          <div class="viewer-container" data-viewer="v2">
+            <img src="В 06.09.2026.png" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v2">
+            <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v2')">
+              <img src="R.png" alt="Развернуть" class="fs-icon">
+            </button>
+          </div>
+          <p class="modal-desc" id="modalDescV2"></p>
+          <p class="modal-tools" id="modalToolsV2"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО УЧАСТНИКА -->
+    <div class="modal-overlay" id="memberModalOverlay"></div>
+
+    <footer>
+      <p>2026 BU3DC#</p>
+      <p>
+        <a href="https://max.ru/join/-IouWOwxta1z1rEa4qPSX2sW6E2TOzDXf6pqY2M2Tjw" 
+           style="color: var(--muted); text-decoration: underline; font-size: 0.85rem;">
+          Мы в Max
+        </a>
+      </p>
+    </footer>
+    
+    <script>
+      // --- 1. Интро ---
+      const intro = document.getElementById('intro');
+      if (intro) {
+        intro.addEventListener('animationend', () => {
+          intro.style.display = 'none';
+          intro.style.pointerEvents = 'none';
+        });
+      }
+
+      // --- 2. Модальное окно проекта ---
+      function openProjectModal(title) {
+        const overlay = document.getElementById('projectModalOverlay');
+        document.getElementById('modalProjectTitle').textContent = title;
+
+        // Данные версии 1
+        const imgV1 = document.querySelector('[data-viewer-img="v1"]');
+        imgV1.src = 'B 30.08.2026.png';
+        document.getElementById('modalDescV1').textContent =
+          'Пока не скажу, что это и не раскрою сюжет, но скажу, что начал делать первую сцену архива (на фото один из этапов).';
+        document.getElementById('modalToolsV1').textContent = 'Инструменты: Blender';
+
+        // Данные версии 2
+        const imgV2 = document.querySelector('[data-viewer-img="v2"]');
+        imgV2.src = 'В 06.09.2026.png';
+        document.getElementById('modalDescV2').textContent = 'А вот и архивист! (предварительная версия)';
+        document.getElementById('modalToolsV2').textContent = 'Инструменты: Blender';
+
+        // Сброс всех аккордеонов
+        document.querySelectorAll('.version-plate').forEach(plate => {
+          plate.classList.remove('expanded');
+          const arrow = plate.querySelector('.version-arrow');
+          if (arrow) arrow.textContent = '▼';
+        });
+        document.querySelectorAll('.expanded-content').forEach(c => {
+          c.classList.remove('active');
+          c.style.maxHeight = null;
+        });
+
+        overlay.classList.add('active');
+
+        // Инициализация обоих просмотрщиков
+        initViewer('v1');
+        initViewer('v2');
+      }
+
+      function closeProjectModal() {
+        document.getElementById('projectModalOverlay').classList.remove('active');
+      }
+
+      document.getElementById('projectModalOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeProjectModal();
+      });
+
+      // --- 3. Аккордеон (обобщённый для любого количества версий) ---
+      function toggleVersionContent(plate) {
+        const arrow = plate.querySelector('.version-arrow');
+        const content = plate.nextElementSibling;
+        const isExpanded = plate.classList.contains('expanded');
+
+        if (!isExpanded) {
+          plate.classList.add('expanded');
+          arrow.textContent = '▲';
+          content.classList.add('active');
+          setTimeout(() => {
+            content.style.maxHeight = content.scrollHeight + 'px';
+          }, 50);
+        } else {
+          plate.classList.remove('expanded');
+          arrow.textContent = '▼';
+          content.classList.remove('active');
+          content.style.maxHeight = null;
+        }
+      }
+
+      // --- 4. Модальное окно участника ---
+      function openMemberModal(name, imgSrc) {
+        const existing = document.getElementById('memberModalOverlay');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'memberModalOverlay';
+        overlay.style.cssText = `
+          position:fixed; top:0; left:0; right:0; bottom:0;
+          background:rgba(0,0,0,0.92); z-index:3000;
+          display:flex; justify-content:center; align-items:center;
+          padding:20px;
+        `;
+        overlay.addEventListener('click', () => overlay.remove());
+
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+          background:var(--panel); border:1px solid var(--border);
+          border-radius:16px; overflow:hidden;
+          box-shadow:0 32px 64px rgba(0,0,0,0.5);
+          max-width:90vw; max-height:90vh;
+          display:flex; flex-direction:column;
+        `;
+
+        const header = document.createElement('div');
+        header.style.cssText = `padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;`;
+
+        const h3 = document.createElement('h3');
+        h3.textContent = name;
+        h3.style.cssText = `margin:0; color:#fff; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:1.3rem;`;
+
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '×';
+        closeBtn.style.cssText = `background:none; border:none; color:var(--muted); cursor:pointer; font-size:1.4rem; line-height:1; padding:0;`;
+        closeBtn.addEventListener('click', () => overlay.remove());
+
+        header.appendChild(h3);
+        header.appendChild(closeBtn);
+        modal.appendChild(header);
+
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.alt = name;
+        img.style.cssText = `width:100%; height:auto; max-height:60vh; object-fit:contain; display:block;`;
+        modal.appendChild(img);
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+      }
+
+      // --- 5. ЛОГИКА ПРОСМОТРЩИКА (обобщённая, по data-viewer id) ---
+      const viewers = {}; // храним состояние каждого просмотрщика
+
+      function initViewer(vid) {
+        const container = document.querySelector(`[data-viewer="${vid}"]`);
+        const img = document.querySelector(`[data-viewer-img="${vid}"]`);
+
+        if (!container || !img) return;
+
+        viewers[vid] = {
+          panX: 0, panY: 0, scale: 1,
+          isDragging: false, lastX: 0, lastY: 0,
+          initialDistance: 0, initialScale: 1,
+          isFullscreen: false, fsElement: null,
+          container, img
+        };
+
+        container.style.overflow = 'hidden';
+        img.classList.remove('can-drag');
+        updateTransform(vid);
+
+        // Удаляем старые слушатели через клонирование
+        const newContainer = container.cloneNode(true);
+        container.parentNode.replaceChild(newContainer, container);
+        const newImg = newContainer.querySelector('.viewer-image');
+        const newBtn = newContainer.querySelector('.fs-btn');
+
+        // Переназначаем onclick на кнопке
+        newBtn.setAttribute('onclick', `toggleFullscreen('${vid}')`);
+
+        // Привязываем слушатели заново
+        newContainer.addEventListener('wheel', (e) => handleWheel(e, vid), { passive: false });
+        newContainer.addEventListener('mousedown', (e) => handleMouseDown(e, vid));
+        window.addEventListener('mouseup', () => handleMouseUp(vid));
+        window.addEventListener('mousemove', (e) => handleMouseMove(e, vid));
+
+        newContainer.addEventListener('touchstart', (e) => handleTouchStart(e, vid), { passive: false });
+        newContainer.addEventListener('touchmove', (e) => handleTouchMove(e, vid), { passive: false });
+        window.addEventListener('touchend', () => handleTouchEnd(vid));
+
+        // Обновляем ссылки
+        viewers[vid].container = newContainer;
+        viewers[vid].img = newImg;
+      }
+
+      function handleWheel(e, vid) {
+        const v = viewers[vid];
+        if (!v || !v.isFullscreen) return;
+        e.preventDefault();
+        const delta = e.deltaY * -0.005;
+        v.scale = Math.max(0.1, Math.min(4, v.scale + delta));
+        updateTransform(vid);
+      }
+
+      function handleMouseDown(e, vid) {
+        const v = viewers[vid];
+        if (!v || !v.isFullscreen) return;
+        v.isDragging = true;
+        v.lastX = e.clientX - v.panX;
+        v.lastY = e.clientY - v.panY;
+        v.container.style.cursor = 'grabbing';
+      }
+
+      function handleMouseUp(vid) {
+        const v = viewers[vid];
+        if (!v) return;
+        v.isDragging = false;
+        if (v.container) v.container.style.cursor = 'grab';
+      }
+
+      function handleMouseMove(e, vid) {
+        const v = viewers[vid];
+        if (!v || !v.isDragging) return;
+        e.preventDefault();
+        v.panX = e.clientX - v.lastX;
+        v.panY = e.clientY - v.lastY;
+        updateTransform(vid);
+      }
+
+      function handleTouchStart(e, vid) {
+        const v = viewers[vid];
+        if (!v || !v.isFullscreen) return;
+        const touches = e.touches;
+        if (touches.length >= 2) {
+          v.initialDistance = Math.hypot(
+            touches[0].clientX - touches[1].clientX,
+            touches[0].clientY - touches[1].clientY
+          );
+          v.initialScale = v.scale;
+        } else if (touches.length === 1) {
+          v.lastX = touches[0].clientX - v.panX;
+          v.lastY = touches[0].clientY - v.panY;
+          v.isDragging = true;
+        }
+      }
+
+      function handleTouchMove(e, vid) {
+        const v = viewers[vid];
+        if (!v || !v.isFullscreen) return;
+        e.preventDefault();
+        const touches = e.touches;
+        if (touches.length >= 2) {
+          const currentDistance = Math.hypot(
+            touches[0].clientX - touches[1].clientX,
+            touches[0].clientY - touches[1].clientY
+          );
+          const scaleFactor = currentDistance / v.initialDistance;
+          v.scale = Math.max(0.1, Math.min(4, v.initialScale * scaleFactor));
+          updateTransform(vid);
+        } else if (v.isDragging && touches.length === 1) {
+          v.panX = touches[0].clientX - v.lastX;
+          v.panY = touches[0].clientY - v.lastY;
+          updateTransform(vid);
+        }
+      }
+
+      function handleTouchEnd(vid) {
+        const v = viewers[vid];
+        if (v) v.isDragging = false;
+      }
+
+      function updateTransform(vid) {
+        const v = viewers[vid];
+        if (!v) return;
+        if (v.isFullscreen) {
+          v.img.style.transform = `translate(${v.panX}px, ${v.panY}px) scale(${v.scale})`;
+          v.img.classList.add('can-drag');
+        } else {
+          v.img.style.transform = 'translate(0px, 0px) scale(1)';
+          v.img.classList.remove('can-drag');
+        }
+      }
+
+      // --- 6. ПОЛНОЭКРАННЫЙ РЕЖИМ ---
+      function toggleFullscreen(vid) {
+        const v = viewers[vid];
+        if (!v) return;
+        const container = v.container;
+
+        if (!v.isFullscreen) {
+          if (container.requestFullscreen) {
+            container.requestFullscreen().then(() => {
+              v.isFullscreen = true;
+              updateTransform(vid);
+            }).catch(err => console.error(err));
+          } else if (container.webkitRequestFullscreen) {
+            container.webkitRequestFullscreen();
+            v.isFullscreen = true;
+            updateTransform(vid);
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().then(() => {
+              v.isFullscreen = false;
+              updateTransform(vid);
+            });
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+            v.isFullscreen = false;
+            updateTransform(vid);
+          }
+        }
+      }
+
+      // Слушатели выхода из полноэкранного режима — сбрасываем все просмотрщики
+      document.addEventListener('fullscreenchange', () => {
+        const fsEl = document.fullscreenElement;
+        Object.keys(viewers).forEach(vid => {
+          const v = viewers[vid];
+          if (!fsEl || !v.container.contains(fsEl)) {
+            v.isFullscreen = false;
+          }
+          updateTransform(vid);
+        });
+      });
+      document.addEventListener('webkitfullscreenchange', () => {
+        const fsEl = document.webkitFullscreenElement;
+        Object.keys(viewers).forEach(vid => {
+          const v = viewers[vid];
+          if (!fsEl || !v.container.contains(fsEl)) {
+            v.isFullscreen = false;
+          }
+                    updateTransform(vid);
+        });
+      });
+
+      // --- 7. ЗАПУСК ИНТРО ПРИ ЗАГРУЗКЕ ---
+      window.addEventListener('load', () => {
+        const intro = document.getElementById('intro');
+        if (intro) {
+          // Небольшая задержка, чтобы анимация точно стартовала
+          setTimeout(() => {
+            intro.style.opacity = '1';
+            // Анимация уже прописана в CSS — просто убедимся, что она активна
+          }, 50);
+        }
+      });
+
+      // --- 8. АДАПТИВНОСТЬ И ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
+      function onResize() {
+        // При изменении размера окна сбрасываем масштаб у всех просмотрщиков,
+        // чтобы не было «залипших» состояний после ресайза
+        Object.keys(viewers).forEach(vid => {
+          const v = viewers[vid];
+          if (v) {
+            v.scale = 1;
+            v.panX = 0;
+            v.panY = 0;
+            updateTransform(vid);
+          }
+        });
+      }
+      window.addEventListener('resize', onResize);
+
+      // --- 9. ПРОВЕРКА НАЛИЧИЯ ИЗОБРАЖЕНИЙ (для отладки) ---
+      window.addEventListener('error', (e) => {
+        // Если картинка не загрузилась — можно вывести в консоль, чтобы быстро заметить битые ссылки
+        if (e.target.tagName === 'IMG') {
+          console.warn('Картинка не загружена:', e.target.src);
+        }
+      }, true);
+    </script>
+  </body>
+</html>
+
+
