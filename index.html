@@ -49,13 +49,8 @@
         padding: 0.5rem 1rem; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border);
         display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.7rem;
       }
-      .logo {
-        flex: 1; min-width: 120px; display: flex; align-items: center;
-      }
-      .logo img {
-        height: calc(3 * 1.4rem);
-        display: block; max-width: 100%;
-      }
+      .logo { flex: 1; min-width: 120px; display: flex; align-items: center; }
+      .logo img { height: calc(3 * 1.4rem); display: block; max-width: 100%; }
       nav ul { list-style: none; padding: 0; margin: 0; display: flex; gap: 0.5rem; flex-wrap: wrap; }
       nav a {
         display: inline-block; padding: 0.4rem 0.7rem; background: var(--btn-bg); border: 1px solid var(--border);
@@ -132,7 +127,6 @@
       }
       .close-modal:hover { color: #fff; }
 
-      /* ОБЛАСТЬ ПРОКРУТКИ ВНУТРИ МОДАЛЬНОГО ОКНА */
       .modal-body {
         flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
@@ -149,7 +143,6 @@
       .version-arrow { transition: transform 0.2s ease; flex-shrink: 0; margin-left: 12px; }
       .version-plate.expanded .version-arrow { transform: rotate(180deg); }
 
-      /* РОДИТЕЛЬСКИЙ АККОРДЕОН — чуть ярче */
       .parent-plate {
         background: rgba(255, 82, 82, 0.08); border-bottom: 2px solid var(--accent);
         font-size: 1rem;
@@ -157,53 +150,88 @@
       .parent-plate:hover { background: rgba(255, 82, 82, 0.14); }
 
       .expanded-content {
-        max-height: 0; 
-        overflow: hidden;
+        max-height: 0; overflow: hidden;
         transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         background: rgba(19, 19, 24, 0.4);
         padding: 0 1.4rem;
       }
       .expanded-content.active {
-        max-height: 2000px;
-        padding: 1.4rem;
-        padding-top: 1.4rem;
+        max-height: 2000px; padding: 1.4rem; padding-top: 1.4rem;
       }
+      .parent-content.active { max-height: 9999px; padding: 0; background: transparent; }
 
-      /* РОДИТЕЛЬСКИЙ КОНТЕЙНЕР — больше max-height, вмещает все дочерние */
-      .parent-content.active {
-        max-height: 9999px;
-        padding: 0;
-        background: transparent;
-      }
-
-      /* ПРОСМОТРЩИК */
+      /* ПРОСМОТРЩИК — общий контейнер */
       .viewer-container {
         width: 100%; height: auto; background: #000; position: relative;
         overflow: hidden; border-radius: 8px; margin: 1rem 0;
       }
       .viewer-container:fullscreen,
-      .viewer-container:-webkit-full-screen {
-        height: 100vh;
-      }
+      .viewer-container:-webkit-full-screen { height: 100vh; }
       .viewer-image {
-        width: 100%;
-        height: auto;
-        display: block; image-rendering: auto;
-        will-change: transform;
-        user-select: none;
-        -webkit-user-drag: none;
-        cursor: default;
-        transform-origin: center center;
+        width: 100%; height: auto; display: block; image-rendering: auto;
+        will-change: transform; user-select: none; -webkit-user-drag: none;
+        cursor: default; transform-origin: center center;
         transform: translate(0, 0) scale(1);
       }
       .viewer-container:fullscreen .viewer-image,
       .viewer-container:-webkit-full-screen .viewer-image {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
+        width: 100%; height: 100%; object-fit: contain;
       }
       .viewer-image.can-drag { cursor: grab; }
       .viewer-image.can-drag:active { cursor: grabbing; }
+
+      /* ВИДЕО-ПРОСМОТРЩИК */
+      .viewer-video {
+        width: 100%; height: auto; display: block; object-fit: contain;
+        background: #000; transform-origin: center center;
+        transform: translate(0, 0) scale(1); will-change: transform;
+        user-select: none; -webkit-user-drag: none;
+      }
+      .viewer-container:fullscreen .viewer-video,
+      .viewer-container:-webkit-full-screen .viewer-video {
+        width: 100%; height: 100%; object-fit: contain;
+      }
+      .viewer-video.can-drag { cursor: grab; }
+      .viewer-video.can-drag:active { cursor: grabbing; }
+
+      /* ПАНЕЛЬ УПРАВЛЕНИЯ ВИДЕО */
+      .video-controls {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.85));
+        padding: 10px 12px 8px; display: flex; align-items: center; gap: 10px;
+        z-index: 15; opacity: 1; transition: opacity 0.3s ease;
+      }
+      .video-controls.hidden { opacity: 0; pointer-events: none; }
+      .play-btn {
+        background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 8px; width: 38px; height: 38px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; color: #fff; padding: 0; transition: background 0.2s, border-color 0.2s;
+      }
+      .play-btn:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.45); }
+      .play-btn svg { width: 18px; height: 18px; fill: #fff; }
+
+      .video-slider-wrap {
+        flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0;
+      }
+      .video-slider {
+        flex: 1; -webkit-appearance: none; appearance: none; height: 6px;
+        background: rgba(255,255,255,0.2); border-radius: 3px; outline: none;
+        cursor: pointer; min-width: 40px;
+      }
+      .video-slider::-webkit-slider-thumb {
+        -webkit-appearance: none; appearance: none; width: 16px; height: 16px;
+        border-radius: 50%; background: var(--accent); border: 2px solid #fff;
+        cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      }
+      .video-slider::-moz-range-thumb {
+        width: 16px; height: 16px; border-radius: 50%; background: var(--accent);
+        border: 2px solid #fff; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      }
+      .video-time {
+        font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #fff;
+        white-space: nowrap; flex-shrink: 0; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      }
 
       .fs-btn {
         position: absolute; bottom: 12px; right: 12px; z-index: 10;
@@ -216,22 +244,19 @@
       .fs-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4); }
       .fs-icon { width: 24px; height: 24px; object-fit: contain; display: block; }
 
+      .viewer-container.has-video .fs-btn { bottom: 58px; }
+
       .modal-desc { color: #fff; font-size: 1rem; line-height: 1.55; margin-bottom: 1.2rem; }
       .modal-tools { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
 
       /* МОДАЛЬНОЕ ОКНО УЧАСТНИКА */
-      .member-modal-content {
-        display: flex; flex: 1; overflow: hidden; min-height: 0;
-      }
+      .member-modal-content { display: flex; flex: 1; overflow: hidden; min-height: 0; }
       .member-modal-img-side {
-        flex: 0 0 45%; max-width: 45%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        flex: 0 0 45%; max-width: 45%; background: #000;
+        display: flex; align-items: center; justify-content: center; overflow: hidden;
       }
-      .member-modal-img-side img {
-        width: 100%; height: auto; max-height: 100%; object-fit: contain; display: block;
-      }
-      .member-modal-info-side {
-        flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0;
-      }
+      .member-modal-img-side img { width: 100%; height: auto; max-height: 100%; object-fit: contain; display: block; }
+      .member-modal-info-side { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
       .member-roles-header {
         padding: 0.8rem 1.2rem 0.4rem; color: var(--muted); font-family: 'JetBrains Mono', monospace;
         font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0;
@@ -246,13 +271,9 @@
         font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; white-space: nowrap;
       }
 
-      /* АДАПТИВНОСТЬ ДЛЯ ТЕЛЕФОНА */
       @media (max-width: 600px) {
         .modal-overlay { padding: 0; }
-        .modal-window {
-          border-radius: 0; max-height: 100dvh; max-width: 100%;
-          height: 100dvh;
-        }
+        .modal-window { border-radius: 0; max-height: 100dvh; max-width: 100%; height: 100dvh; }
         .modal-header { padding: 1rem 1rem; }
         .modal-title { font-size: 1rem; }
         .version-plate { padding: 0.9rem 1rem; font-size: 0.82rem; }
@@ -267,23 +288,20 @@
         .logo img { height: 3.8rem; }
         .modal-desc { font-size: 0.95rem; }
         .parent-content.active { max-height: 9999px; }
-
-        /* MODAL MEMBER — мобильная раскладка */
-        .member-modal-content {
-          flex-direction: column;
-        }
-        .member-modal-img-side {
-          flex: 0 0 auto; max-width: 100%; max-height: 35vh;
-        }
-        .member-modal-img-side img {
-          max-height: 35vh;
-        }
-        .member-roles-list {
-          padding: 0.4rem 1rem 1rem;
-        }
+        .member-modal-content { flex-direction: column; }
+        .member-modal-img-side { flex: 0 0 auto; max-width: 100%; max-height: 35vh; }
+        .member-modal-img-side img { max-height: 35vh; }
+        .member-roles-list { padding: 0.4rem 1rem 1rem; }
+        .play-btn { width: 34px; height: 34px; }
+        .play-btn svg { width: 15px; height: 15px; }
+        .video-slider { height: 5px; }
+        .video-slider::-webkit-slider-thumb { width: 14px; height: 14px; }
+        .video-slider::-moz-range-thumb { width: 14px; height: 14px; }
+        .video-time { font-size: 0.66rem; }
+        .video-controls { padding: 8px 8px 6px; gap: 6px; }
+        .viewer-container.has-video .fs-btn { bottom: 52px; }
       }
 
-      /* ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ */
       @media (max-width: 360px) {
         .intro-text { font-size: 2.5rem; letter-spacing: 1px; }
         nav a { font-size: 0.7rem; padding: 0.35rem 0.6rem; letter-spacing: 0.5px; }
@@ -293,12 +311,8 @@
         .logo img { height: 3.4rem; }
       }
 
-      /* ПОЛНОЭКРАННЫЙ РЕЖИМ — блокируем нативные жесты браузера */
       .viewer-container:fullscreen,
-      .viewer-container:-webkit-full-screen {
-        touch-action: none;
-        overscroll-behavior: contain;
-      }
+      .viewer-container:-webkit-full-screen { touch-action: none; overscroll-behavior: contain; }
 
       footer {
         padding: 3rem 1rem; text-align: center; border-top: 1px solid var(--border);
@@ -339,17 +353,14 @@
 
         <h3><strong>В состав команды входят:</strong></h3>
         <div style="display:flex; flex-direction:column; gap:16px; max-width:320px;">
-          <!-- Участник 1 -->
           <div class="team-member-card" onclick="openMemberModal('Ophiuchus', 'O.png')">
             <img src="O.png" alt="Ophiuchus" class="team-img">
             <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#fff;">Ophiuchus</span>
           </div>
-          <!-- Участник 3 -->
           <div class="team-member-card" onclick="openMemberModal('Long Сarbine', 'L.jpeg')">
             <img src="L.jpeg" alt="Long Сarbine" class="team-img">
             <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#fff;">Long Сarbine</span>
           </div>
-          <!-- Участник 2 -->
           <div class="team-member-card" onclick="openMemberModal('Node', 'N.jpg')">
             <img src="N.jpg" alt="Node" class="team-img">
             <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#fff;">Node</span>
@@ -360,8 +371,6 @@
       <!-- ПРОЕКТЫ -->
       <section id="projects">
         <h2>Наши проекты</h2>
-
-        <!-- Проект: Тени города Рэха -->
         <article class="project-card" onclick="openProjectModal('Тени города Рэха')">
           <div class="card-header-row">
             <h3 class="card-title">Тени города Рэха</h3>
@@ -379,7 +388,6 @@
           <button class="close-modal" onclick="closeProjectModal()">&times;</button>
         </div>
 
-        <!-- ТЕЛО МОДАЛЬНОГО ОКНА (прокручиваемая область) -->
         <div class="modal-body" id="modalBody">
 
           <!-- РОДИТЕЛЬСКИЙ АККОРДЕОН: Сцена архив -->
@@ -406,7 +414,7 @@
               <p class="modal-tools" id="modalAuthorV1"></p>
             </div>
 
-            <!-- Версия 20.09.2026-->
+            <!-- Версия 20.09.2026 -->
             <div class="version-plate" onclick="toggleVersionContent(this)">
               <span>Версия 20.09.2026</span>
               <span class="version-arrow">&#9660;</span>
@@ -422,9 +430,8 @@
               <p class="modal-tools" id="modalToolsV2"></p>
               <p class="modal-tools" id="modalAuthorV2"></p>
             </div>
-            
 
-            <!-- Версия 21.09.2026 (1) — ЗАКОММЕНТИРОВАНО
+            <!-- Версия 21.09.2026 (1) -->
             <div class="version-plate" onclick="toggleVersionContent(this)">
               <span>Версия 21.09.2026 (1)</span>
               <span class="version-arrow">&#9660;</span>
@@ -440,9 +447,8 @@
               <p class="modal-tools" id="modalToolsV3"></p>
               <p class="modal-tools" id="modalAuthorV3"></p>
             </div>
-            -->
 
-            <!-- Версия 21.09.2026 (2) — ЗАКОММЕНТИРОВАНО
+            <!-- Версия 21.09.2026 (2) -->
             <div class="version-plate" onclick="toggleVersionContent(this)">
               <span>Версия 21.09.2026 (2)</span>
               <span class="version-arrow">&#9660;</span>
@@ -458,9 +464,8 @@
               <p class="modal-tools" id="modalToolsV4"></p>
               <p class="modal-tools" id="modalAuthorV4"></p>
             </div>
-            -->
 
-            <!-- Версия 21.09.2026 (3) — ЗАКОММЕНТИРОВАНО
+            <!-- Версия 21.09.2026 (3) -->
             <div class="version-plate" onclick="toggleVersionContent(this)">
               <span>Версия 21.09.2026 (3)</span>
               <span class="version-arrow">&#9660;</span>
@@ -476,9 +481,8 @@
               <p class="modal-tools" id="modalToolsV5"></p>
               <p class="modal-tools" id="modalAuthorV5"></p>
             </div>
-            -->
 
-            <!-- Версия 21.09.2026 (4) — ЗАКОММЕНТИРОВАНО
+            <!-- Версия 21.09.2026 (4) -->
             <div class="version-plate" onclick="toggleVersionContent(this)">
               <span>Версия 21.09.2026 (4)</span>
               <span class="version-arrow">&#9660;</span>
@@ -494,9 +498,8 @@
               <p class="modal-tools" id="modalToolsV6"></p>
               <p class="modal-tools" id="modalAuthorV6"></p>
             </div>
-            -->
 
-            <!-- Версия 21.09.2026 (5) — ЗАКОММЕНТИРОВАНО
+            <!-- Версия 21.09.2026 (5) -->
             <div class="version-plate" onclick="toggleVersionContent(this)">
               <span>Версия 21.09.2026 (5)</span>
               <span class="version-arrow">&#9660;</span>
@@ -512,6 +515,34 @@
               <p class="modal-tools" id="modalToolsV7"></p>
               <p class="modal-tools" id="modalAuthorV7"></p>
             </div>
+
+            <!-- Версия 22.09.2026 (ВИДЕО) — ЗАКОММЕНТИРОВАНО
+            <div class="version-plate" onclick="toggleVersionContent(this)">
+              <span>Версия 22.09.2026</span>
+              <span class="version-arrow">&#9660;</span>
+            </div>
+            <div class="expanded-content">
+              <div class="viewer-container has-video" data-viewer="v8">
+                <video class="viewer-video" data-viewer-video="v8" preload="metadata" playsinline>
+                  <source src="В 22.09.2026.mp4" type="video/mp4">
+                </video>
+                <div class="video-controls" data-controls="v8">
+                  <button class="play-btn" data-play-btn="v8" title="Воспроизвести / Пауза">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                  <div class="video-slider-wrap">
+                    <input type="range" class="video-slider" data-slider="v8" min="0" max="100" value="0" step="0.1">
+                  </div>
+                  <span class="video-time" data-time="v8">0:00 / 0:00</span>
+                </div>
+                <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v8')">
+                  <img src="R.png" alt="Развернуть" class="fs-icon">
+                </button>
+              </div>
+              <p class="modal-desc" id="modalDescV8"></p>
+              <p class="modal-tools" id="modalToolsV8"></p>
+              <p class="modal-tools" id="modalAuthorV8"></p>
+            </div>
             -->
 
           </div><!-- /parent-content -->
@@ -525,13 +556,13 @@
     <footer>
       <p>2026 BU3DC#</p>
       <p>
-        <a href="https://max.ru/join/vPT8vwwFKmhBTC2mWpJXXE1GfBGgfM39xkhnhmS3gz4" 
+        <a href="https://max.ru/join/vPT8vwwFKmhBTC2mWpJXXE1GfBGgfM39xkhnhmS3gz4"
            style="color: var(--muted); text-decoration: underline; font-size: 0.85rem;">
           Мы в Max
         </a>
       </p>
     </footer>
-    
+
     <script>
       // --- 0. Роли участников ---
       const memberRoles = {
@@ -579,72 +610,78 @@
         document.getElementById('modalToolsV2').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV2').textContent = '-Ophiuchus';
 
-        /* --- Версия 21.09.2026 (1) — ЗАКОММЕНТИРОВАНО
+        // --- Версия 21.09.2026 (1) ---
         const imgV3 = document.querySelector('[data-viewer-img="v3"]');
         imgV3.src = 'В 21.09.2026 (1).png';
         document.getElementById('modalDescV3').textContent = 'Ящики теперь ящики, а не коробки.';
         document.getElementById('modalToolsV3').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV3').textContent = '-Ophiuchus';
-        */
 
-        /* --- Версия 21.09.2026 (2) — ЗАКОММЕНТИРОВАНО
+        // --- Версия 21.09.2026 (2) ---
         const imgV4 = document.querySelector('[data-viewer-img="v4"]');
         imgV4.src = 'В 21.09.2026 (2).png';
         document.getElementById('modalDescV4').textContent = 'Добавлены лампочки, вместо света из ниоткуда.';
         document.getElementById('modalToolsV4').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV4').textContent = '-Ophiuchus';
-        */
 
-        /* --- Версия 21.09.2026 (3) — ЗАКОММЕНТИРОВАНО
+        // --- Версия 21.09.2026 (3) ---
         const imgV5 = document.querySelector('[data-viewer-img="v5"]');
         imgV5.src = 'В 21.09.2026 (3).png';
         document.getElementById('modalDescV5').textContent = 'Добавлен стол с ноутбуком, на котором открыт браузер.';
         document.getElementById('modalToolsV5').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV5').textContent = '-Ophiuchus';
-        */
 
-        /* --- Версия 21.09.2026 (4) — ЗАКОММЕНТИРОВАНО
+        // --- Версия 21.09.2026 (4) ---
         const imgV6 = document.querySelector('[data-viewer-img="v6"]');
         imgV6.src = 'В 21.09.2026 (4).png';
         document.getElementById('modalDescV6').textContent = 'В одном из ящиков теперь лежит старинная книга.';
         document.getElementById('modalToolsV6').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV6').textContent = '-Ophiuchus';
-        */
 
-        /* --- Версия 21.09.2026 (5) — ЗАКОММЕНТИРОВАНО
+        // --- Версия 21.09.2026 (5) ---
         const imgV7 = document.querySelector('[data-viewer-img="v7"]');
         imgV7.src = 'В 21.09.2026 (5).png';
         document.getElementById('modalDescV7').textContent = 'Теперь в сцене есть персонаж с симуляцией ткани.';
         document.getElementById('modalToolsV7').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV7').textContent = '-Ophiuchus';
+
+        /* --- Версия 22.09.2026 (ВИДЕО) — ЗАКОММЕНТИРОВАНО
+        document.getElementById('modalDescV8').textContent =
+          'Нет, это не итоговая сцена, а проверка модификаторов! 😅';
+        document.getElementById('modalToolsV8').textContent = 'Инструменты: Blender';
+        document.getElementById('modalAuthorV8').textContent = '-Ophiuchus';
         */
 
-        // Сброс всех аккордеонов (включая родительский)
+        // Сброс всех аккордеонов
         resetAccordions();
-
         overlay.classList.add('active');
 
-        // Инициализация всех просмотрщиков
+        // Инициализация просмотрщиков
         for (const vid of ['v1','v2','v3','v4','v5','v6','v7']) {
           initViewer(vid);
         }
 
-        // Сброс скролла
         document.getElementById('modalBody').scrollTop = 0;
       }
 
       function closeProjectModal() {
         document.getElementById('projectModalOverlay').classList.remove('active');
         resetAccordions();
+        // Останавливаем все видео
+        Object.keys(viewers).forEach(vid => {
+          const v = viewers[vid];
+          if (v && v.video) {
+            v.video.pause();
+          }
+        });
       }
 
       document.getElementById('projectModalOverlay').addEventListener('click', (e) => {
         if (e.target === e.currentTarget) closeProjectModal();
       });
 
-      // --- 3. Сброс всех аккордеонов (включая родительский) ---
+      // --- 3. Сброс всех аккордеонов ---
       function resetAccordions() {
-        // Сброс родительского аккордеона
         const parentPlate = document.querySelector('.parent-plate');
         if (parentPlate) {
           parentPlate.classList.remove('expanded');
@@ -657,8 +694,6 @@
           parentContent.classList.remove('active');
           parentContent.style.maxHeight = null;
         }
-
-        // Сброс дочерних аккордеонов
         document.querySelectorAll('.parent-content .version-plate').forEach(plate => {
           plate.classList.remove('expanded');
           plate.style.display = '';
@@ -671,109 +706,84 @@
         });
       }
 
-      // --- 4. Родительский аккордеон: Сцена архив ---
+      // --- 4. Родительский аккордеон ---
       function toggleParentAccordion(plate) {
         const arrow = plate.querySelector('.version-arrow');
         const content = plate.nextElementSibling;
         const isExpanded = plate.classList.contains('expanded');
 
         if (!isExpanded) {
-          // Разворачиваем родителя — показываем все дочерние плашки (свёрнутые)
           plate.classList.add('expanded');
           arrow.textContent = '\u25BC';
           content.classList.add('active');
           content.style.maxHeight = '9999px';
-
-          // Сброс дочерних
           document.querySelectorAll('.parent-content .version-plate').forEach(p => {
-            p.classList.remove('expanded');
-            p.style.display = '';
+            p.classList.remove('expanded'); p.style.display = '';
             const a = p.querySelector('.version-arrow');
             if (a) a.textContent = '\u25BC';
           });
           document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
-            c.classList.remove('active');
-            c.style.maxHeight = null;
+            c.classList.remove('active'); c.style.maxHeight = null;
           });
-
-          setTimeout(() => {
-            document.getElementById('modalBody').scrollTop = 0;
-          }, 300);
+          setTimeout(() => { document.getElementById('modalBody').scrollTop = 0; }, 300);
         } else {
-          // Сворачиваем родителя
           plate.classList.remove('expanded');
           arrow.textContent = '\u25BC';
           content.classList.remove('active');
           content.style.maxHeight = null;
-
-          // Сброс дочерних
           document.querySelectorAll('.parent-content .version-plate').forEach(p => {
-            p.classList.remove('expanded');
-            p.style.display = '';
+            p.classList.remove('expanded'); p.style.display = '';
             const a = p.querySelector('.version-arrow');
             if (a) a.textContent = '\u25BC';
           });
           document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
-            c.classList.remove('active');
-            c.style.maxHeight = null;
+            c.classList.remove('active'); c.style.maxHeight = null;
           });
-
           document.getElementById('modalBody').scrollTop = 0;
         }
       }
 
-      // --- 5. Аккордеон: разворачиваем одну версию, прячем остальные ---
+      // --- 5. Аккордеон версии ---
       function toggleVersionContent(plate) {
         const arrow = plate.querySelector('.version-arrow');
         const content = plate.nextElementSibling;
         const isExpanded = plate.classList.contains('expanded');
 
         if (!isExpanded) {
-          // Прячем все остальные плашки и их контент
           document.querySelectorAll('.parent-content > .version-plate').forEach(p => {
             if (p !== plate) p.style.display = 'none';
           });
           document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
-            if (c !== content) {
-              c.classList.remove('active');
-              c.style.maxHeight = null;
-            }
+            if (c !== content) { c.classList.remove('active'); c.style.maxHeight = null; }
           });
 
-          // Разворачиваем выбранную
           plate.classList.add('expanded');
           arrow.textContent = '\u25BC';
           content.classList.add('active');
           requestAnimationFrame(() => {
             content.style.maxHeight = content.scrollHeight + 'px';
           });
-
-          // Скроллируем к началу контента после раскрытия
           setTimeout(() => {
             document.getElementById('modalBody').scrollTop = 0;
             if (content.classList.contains('active')) {
               content.style.maxHeight = content.scrollHeight + 'px';
             }
           }, 300);
-
         } else {
           collapseAllVersions();
         }
       }
 
-      // --- 6. Сворачивание версии обратно (показываем все плашки) ---
+      // --- 6. Сворачивание версии ---
       function collapseAllVersions() {
         document.querySelectorAll('.parent-content > .version-plate').forEach(p => {
-          p.classList.remove('expanded');
-          p.style.display = '';
+          p.classList.remove('expanded'); p.style.display = '';
           const arrow = p.querySelector('.version-arrow');
           if (arrow) arrow.textContent = '\u25BC';
         });
         document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
-          c.classList.remove('active');
-          c.style.maxHeight = null;
+          c.classList.remove('active'); c.style.maxHeight = null;
         });
-
         document.getElementById('modalBody').scrollTop = 0;
       }
 
@@ -792,10 +802,7 @@
         `;
         overlay.classList.add('modal-overlay');
         overlay.style.display = 'flex';
-
-        overlay.addEventListener('click', (e) => {
-          if (e.target === overlay) overlay.remove();
-        });
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 
         const modal = document.createElement('div');
         modal.style.cssText = `
@@ -809,45 +816,31 @@
 
         const header = document.createElement('div');
         header.style.cssText = `padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0;`;
-
         const h3 = document.createElement('h3');
         h3.textContent = name;
         h3.style.cssText = `margin:0; color:#fff; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:1.3rem;`;
-
         const closeBtn = document.createElement('button');
         closeBtn.textContent = '\u00D7';
         closeBtn.style.cssText = `background:none; border:none; color:var(--muted); cursor:pointer; font-size:1.6rem; line-height:1; padding:0 4px; flex-shrink:0;`;
         closeBtn.addEventListener('click', () => overlay.remove());
+        header.appendChild(h3); header.appendChild(closeBtn); modal.appendChild(header);
 
-        header.appendChild(h3);
-        header.appendChild(closeBtn);
-        modal.appendChild(header);
-
-        // --- Контент: картинка + роли ---
         const content = document.createElement('div');
         content.className = 'member-modal-content';
-
-        // Левая часть — картинка
         const imgSide = document.createElement('div');
         imgSide.className = 'member-modal-img-side';
-
         const img = document.createElement('img');
-        img.src = imgSrc;
-        img.alt = name;
+        img.src = imgSrc; img.alt = name;
         imgSide.appendChild(img);
 
-        // Правая часть — роли
         const infoSide = document.createElement('div');
         infoSide.className = 'member-modal-info-side';
-
         const rolesHeader = document.createElement('div');
         rolesHeader.className = 'member-roles-header';
         rolesHeader.textContent = 'Чем занимается';
         infoSide.appendChild(rolesHeader);
-
         const rolesList = document.createElement('div');
         rolesList.className = 'member-roles-list';
-
         const roles = memberRoles[name] || [];
         roles.forEach(role => {
           const tag = document.createElement('span');
@@ -855,13 +848,9 @@
           tag.textContent = role;
           rolesList.appendChild(tag);
         });
-
         infoSide.appendChild(rolesList);
-
-        content.appendChild(imgSide);
-        content.appendChild(infoSide);
+        content.appendChild(imgSide); content.appendChild(infoSide);
         modal.appendChild(content);
-
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
       }
@@ -869,18 +858,20 @@
       // --- 8. ЛОГИКА ПРОСМОТРЩИКА ---
       const viewers = {};
 
+      const PLAY_ICON = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+      const PAUSE_ICON = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+
       function initViewer(vid) {
         const container = document.querySelector('[data-viewer="' + vid + '"]');
-        const img = document.querySelector('[data-viewer-img="' + vid + '"]');
-
-        if (!container || !img) return;
+        if (!container) return;
 
         const newContainer = container.cloneNode(true);
         container.parentNode.replaceChild(newContainer, container);
-        const newImg = newContainer.querySelector('.viewer-image');
-        const newBtn = newContainer.querySelector('.fs-btn');
 
-        newBtn.setAttribute('onclick', 'toggleFullscreen(\'' + vid + '\')');
+        const newImg = newContainer.querySelector('.viewer-image');
+        const newVideo = newContainer.querySelector('.viewer-video');
+        const newBtn = newContainer.querySelector('.fs-btn');
+        if (newBtn) newBtn.setAttribute('onclick', 'toggleFullscreen(\'' + vid + '\')');
 
         viewers[vid] = {
           panX: 0, panY: 0, scale: 1,
@@ -889,26 +880,110 @@
           initialPanX: 0, initialPanY: 0,
           pinchCenterX: 0, pinchCenterY: 0,
           isFullscreen: false,
-          container: newContainer, img: newImg
+          container: newContainer,
+          img: newImg,
+          video: newVideo,
+          isVideo: !!newVideo
         };
 
         newContainer.addEventListener('wheel', (e) => handleWheel(e, vid), { passive: false });
         newContainer.addEventListener('mousedown', (e) => handleMouseDown(e, vid));
         window.addEventListener('mouseup', () => handleMouseUp(vid));
         window.addEventListener('mousemove', (e) => handleMouseMove(e, vid));
-
         newContainer.addEventListener('touchstart', (e) => handleTouchStart(e, vid), { passive: false });
         newContainer.addEventListener('touchmove', (e) => handleTouchMove(e, vid), { passive: false });
         window.addEventListener('touchend', () => handleTouchEnd(vid));
 
+        if (newVideo) {
+          initVideoControls(vid, newContainer, newVideo);
+        }
+
         updateTransform(vid);
       }
 
+      // --- 9. УПРАВЛЕНИЕ ВИДЕО ---
+      function initVideoControls(vid, container, video) {
+        const playBtn = container.querySelector('[data-play-btn="' + vid + '"]');
+        const slider = container.querySelector('[data-slider="' + vid + '"]');
+        const timeDisplay = container.querySelector('[data-time="' + vid + '"]');
+        const controls = container.querySelector('[data-controls="' + vid + '"]');
+
+        if (!playBtn || !slider || !timeDisplay) return;
+
+        playBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (video.paused) video.play().catch(() => {});
+          else video.pause();
+        });
+
+        video.addEventListener('play', () => { playBtn.innerHTML = PAUSE_ICON; });
+        video.addEventListener('pause', () => { playBtn.innerHTML = PLAY_ICON; });
+
+        video.addEventListener('timeupdate', () => {
+          if (!slider.dataset.dragging && video.duration) {
+            slider.value = (video.currentTime / video.duration) * 100;
+          }
+          timeDisplay.textContent = formatTime(video.currentTime) + ' / ' + formatTime(video.duration);
+        });
+
+        video.addEventListener('loadedmetadata', () => {
+          timeDisplay.textContent = formatTime(0) + ' / ' + formatTime(video.duration);
+        });
+
+        slider.addEventListener('input', () => {
+          slider.dataset.dragging = 'true';
+          if (video.duration) video.currentTime = (slider.value / 100) * video.duration;
+        });
+        slider.addEventListener('change', () => { delete slider.dataset.dragging; });
+
+        if (controls) {
+          controls.addEventListener('mousedown', (e) => e.stopPropagation());
+          controls.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+        }
+        slider.addEventListener('mousedown', (e) => e.stopPropagation());
+        slider.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+
+        let hideTimer = null;
+        container.addEventListener('mousemove', () => {
+          if (controls) {
+            controls.classList.remove('hidden');
+            clearTimeout(hideTimer);
+            hideTimer = setTimeout(() => {
+              if (!video.paused) controls.classList.add('hidden');
+            }, 2500);
+          }
+        });
+        container.addEventListener('touchstart', () => {
+          if (controls) {
+            controls.classList.remove('hidden');
+            clearTimeout(hideTimer);
+            hideTimer = setTimeout(() => {
+              if (!video.paused) controls.classList.add('hidden');
+            }, 2500);
+          }
+        }, { passive: true });
+
+        video.addEventListener('click', (e) => {
+          const v = viewers[vid];
+          if (v && v.isFullscreen) {
+            e.stopPropagation();
+            if (video.paused) video.play().catch(() => {});
+            else video.pause();
+          }
+        });
+      }
+
+      function formatTime(sec) {
+        if (!sec || isNaN(sec)) return '0:00';
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return m + ':' + (s < 10 ? '0' : '') + s;
+      }
+
+      // --- 10. Трансформация (pan/zoom) ---
       function getRelativePoint(v, clientX, clientY) {
         const rect = v.container.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        return { x: clientX - centerX, y: clientY - centerY };
+        return { x: clientX - (rect.left + rect.width / 2), y: clientY - (rect.top + rect.height / 2) };
       }
 
       function handleWheel(e, vid) {
@@ -962,11 +1037,8 @@
           v.initialPanX = v.panX;
           v.initialPanY = v.panY;
           v.isDragging = false;
-          const midX = (touches[0].clientX + touches[1].clientX) / 2;
-          const midY = (touches[0].clientY + touches[1].clientY) / 2;
-          const pt = getRelativePoint(v, midX, midY);
-          v.pinchCenterX = pt.x;
-          v.pinchCenterY = pt.y;
+          const pt = getRelativePoint(v, (touches[0].clientX + touches[1].clientX) / 2, (touches[0].clientY + touches[1].clientY) / 2);
+          v.pinchCenterX = pt.x; v.pinchCenterY = pt.y;
         } else if (touches.length === 1) {
           v.lastX = touches[0].clientX - v.panX;
           v.lastY = touches[0].clientY - v.panY;
@@ -982,14 +1054,10 @@
         if (touches.length >= 2) {
           const currentDistance = Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
           const newScale = Math.max(0.1, Math.min(4, v.initialScale * (currentDistance / v.initialDistance)));
-          const midX = (touches[0].clientX + touches[1].clientX) / 2;
-          const midY = (touches[0].clientY + touches[1].clientY) / 2;
-          const pt = getRelativePoint(v, midX, midY);
-          v.pinchCenterX = pt.x;
-          v.pinchCenterY = pt.y;
+          const pt = getRelativePoint(v, (touches[0].clientX + touches[1].clientX) / 2, (touches[0].clientY + touches[1].clientY) / 2);
           const ratio = newScale / v.initialScale;
-          v.panX = v.pinchCenterX * (1 - ratio) + v.initialPanX * ratio;
-          v.panY = v.pinchCenterY * (1 - ratio) + v.initialPanY * ratio;
+          v.panX = pt.x * (1 - ratio) + v.initialPanX * ratio;
+          v.panY = pt.y * (1 - ratio) + v.initialPanY * ratio;
           v.scale = newScale;
           updateTransform(vid);
         } else if (v.isDragging && touches.length === 1) {
@@ -1007,12 +1075,14 @@
       function updateTransform(vid) {
         const v = viewers[vid];
         if (!v) return;
+        const el = v.isVideo ? v.video : v.img;
+        if (!el) return;
         if (v.isFullscreen) {
-          v.img.style.transform = 'translate(' + v.panX + 'px, ' + v.panY + 'px) scale(' + v.scale + ')';
-          v.img.classList.add('can-drag');
+          el.style.transform = 'translate(' + v.panX + 'px, ' + v.panY + 'px) scale(' + v.scale + ')';
+          if (v.isVideo) v.video.classList.add('can-drag'); else el.classList.add('can-drag');
         } else {
-          v.img.style.transform = 'translate(0px, 0px) scale(1)';
-          v.img.classList.remove('can-drag');
+          el.style.transform = 'translate(0px, 0px) scale(1)';
+          if (v.isVideo) v.video.classList.remove('can-drag'); else el.classList.remove('can-drag');
         }
       }
 
@@ -1062,12 +1132,10 @@
         });
       });
 
-      // --- 12. ЗАПУСК ИНТРО ПРИ ЗАГРУЗКЕ ---
+      // --- 12. ЗАПУСК ИНТРО ---
       window.addEventListener('load', () => {
         const introLoad = document.getElementById('intro');
-        if (introLoad) {
-          setTimeout(() => { introLoad.style.opacity = '1'; }, 50);
-        }
+        if (introLoad) setTimeout(() => { introLoad.style.opacity = '1'; }, 50);
       });
 
       // --- 13. АДАПТИВНОСТЬ ---
