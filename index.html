@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
-    <title>BU3DC#</title>
+    <title>BU3DC# — инди команда</title>
     <link rel="icon" type="image/jpeg" href="Лого.jpg">
     <link rel="apple-touch-icon" href="Лого.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -546,6 +546,34 @@
               <p class="modal-tools" id="modalAuthorV8"></p>
             </div>
 
+            <!-- Версия 24.09.2026 (ВИДЕО) -->
+            <div class="version-plate" onclick="toggleVersionContent(this)">
+              <span>Версия 24.09.2026</span>
+              <span class="version-arrow">&#9660;</span>
+            </div>
+            <div class="expanded-content">
+              <div class="viewer-container has-video" data-viewer="v9">
+                <video class="viewer-video" data-viewer-video="v9" preload="metadata" playsinline>
+                  <source src="В 24.09.2026.mp4" type="video/mp4">
+                </video>
+                <div class="video-controls" data-controls="v9">
+                  <button class="play-btn" data-play-btn="v9" title="Воспроизвести / Пауза">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                  <div class="video-slider-wrap">
+                    <input type="range" class="video-slider" data-slider="v9" min="0" max="100" value="0" step="0.1">
+                  </div>
+                  <span class="video-time" data-time="v9">0:00 / 0:00</span>
+                </div>
+                <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v9')">
+                  <img src="R.png" alt="Развернуть" class="fs-icon">
+                </button>
+              </div>
+              <p class="modal-desc" id="modalDescV9"></p>
+              <p class="modal-tools" id="modalToolsV9"></p>
+              <p class="modal-tools" id="modalAuthorV9"></p>
+            </div>
+
           </div><!-- /parent-content -->
         </div><!-- /modal-body -->
       </div>
@@ -652,12 +680,18 @@
         document.getElementById('modalToolsV8').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV8').textContent = '-Ophiuchus';
 
+        // --- Версия 24.09.2026 (ВИДЕО) ---
+        document.getElementById('modalDescV9').textContent =
+          'Часть рабочего процесса и предварительный результат.';
+        document.getElementById('modalToolsV9').textContent = 'Инструменты: Blender';
+        document.getElementById('modalAuthorV9').textContent = '-Ophiuchus';
+
         // Сброс всех аккордеонов
         resetAccordions();
         overlay.classList.add('active');
 
         // Инициализация просмотрщиков
-        for (const vid of ['v1','v2','v3','v4','v5','v6','v7','v8']) {
+        for (const vid of ['v1','v2','v3','v4','v5','v6','v7','v8','v9']) {
           initViewer(vid);
         }
 
@@ -1155,11 +1189,23 @@
         }
       }, true);
 
-      // --- 15. ЗАКРЫТИЕ МОДАЛЬНЫХ ОКОН ПО ESC ---
+      // --- 15. ЗАКРЫТИЕ МОДАЛЬНЫХ ОКОН ПО ESC И УПРАВЛЕНИЕ ВИДЕО ПРОБЕЛОМ ---
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           const memberOverlay = document.getElementById('memberModalOverlay');
           if (memberOverlay) memberOverlay.remove();
+        }
+        // Пробел — play/pause для видео в полноэкранном режиме
+        if (e.key === ' ' || e.code === 'Space') {
+          const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+          if (fsEl) {
+            const video = fsEl.querySelector('video');
+            if (video) {
+              e.preventDefault();
+              if (video.paused) video.play().catch(() => {});
+              else video.pause();
+            }
+          }
         }
       });
     </script>
