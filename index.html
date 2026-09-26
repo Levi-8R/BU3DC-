@@ -142,7 +142,7 @@
         font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 700; transition: background 0.2s;
       }
       .version-plate:hover { background: rgba(255,255,255,0.08); }
-      .version-arrow { transition: transform 0.2s ease; flex-shrink: 0; margin-left: 12px; }
+      .version-arrow { transition: transform 0.3s ease; flex-shrink: 0; margin-left: 12px; }
       .version-plate.expanded .version-arrow { transform: rotate(180deg); }
 
       .parent-plate {
@@ -153,14 +153,14 @@
 
       .expanded-content {
         max-height: 0; overflow: hidden;
-        transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: max-height 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
         background: rgba(19, 19, 24, 0.4);
         padding: 0 1.4rem;
       }
       .expanded-content.active {
-        max-height: 2000px; padding: 1.4rem; padding-top: 1.4rem;
+        padding: 1.4rem; padding-top: 1.4rem;
       }
-      .parent-content.active { max-height: 9999px; padding: 0; background: transparent; }
+      .parent-content.active { padding: 0; background: transparent; }
 
       /* ПРОСМОТРЩИК — общий контейнер */
       .viewer-container {
@@ -279,7 +279,7 @@
         .modal-header { padding: 1rem 1rem; }
         .modal-title { font-size: 1rem; }
         .version-plate { padding: 0.9rem 1rem; font-size: 0.82rem; }
-        .expanded-content.active { padding: 1rem; max-height: 3000px; }
+        .expanded-content.active { padding: 1rem; }
         .card-header-row { padding: 1rem 1.2rem; }
         .fs-btn { width: 36px; height: 36px; bottom: 10px; right: 10px; }
         .fs-icon { width: 20px; height: 20px; }
@@ -289,7 +289,7 @@
         main { padding: 0 0.8rem; }
         .logo img { height: 3.8rem; }
         .modal-desc { font-size: 0.95rem; }
-        .parent-content.active { max-height: 9999px; }
+        .parent-content.active { padding: 0; }
         .member-modal-content { flex-direction: column; }
         .member-modal-img-side { flex: 0 0 auto; max-width: 100%; max-height: 35vh; }
         .member-modal-img-side img { max-height: 35vh; }
@@ -602,11 +602,11 @@
           'Продюсер', 'Тестировщик'
         ],
         'Long Сarbine': [
-          'Риггер (кости)', 'Аниматор', 'Текстурщик', 'UI/UX-дизайнер (дизайнер интерфейса)', 'Композитор',
+          '3D-моделлер', 'Риггер (кости)', 'Аниматор', 'Текстурщик', 'UI/UX-дизайнер (дизайнер интерфейса)', 'Композитор',
           'Саунд-дизайнер (звуковые эффекты)', 'Актёр озвучки', 'Звукорежиссёр', 'Тестировщик'
         ],
         'Node': [
-          'Unity-разработчик (скрипты)', 'Программист физики/эффектов (скрипты)'
+          'Режиссёр', 'Сценарист', 'Unity-разработчик (скрипты)', 'Программист физики/эффектов (скрипты)'
         ]
       };
 
@@ -740,6 +740,46 @@
         });
       }
 
+      // --- 3a. Плавное раскрытие ---
+      function smoothExpand(content, afterExpand) {
+        content.classList.add('active');
+        content.style.maxHeight = '0px';
+        // force reflow — фиксируем стартовую высоту
+        void content.offsetHeight;
+        requestAnimationFrame(() => {
+          content.style.maxHeight = content.scrollHeight + 'px';
+        });
+        const onEnd = (e) => {
+          if (e.target !== content) return;
+          if (e.propertyName !== 'max-height') return;
+          content.removeEventListener('transitionend', onEnd);
+          // Отпускаем высоту, чтобы контент мог свободно расти
+          content.style.maxHeight = 'none';
+          if (afterExpand) afterExpand();
+        };
+        content.addEventListener('transitionend', onEnd);
+      }
+
+      // --- 3b. Плавное сворачивание ---
+      function smoothCollapse(content, afterCollapse) {
+        // Фиксируем текущую высоту инлайном
+        content.style.maxHeight = content.scrollHeight + 'px';
+        // force reflow — фиксируем старт
+        void content.offsetHeight;
+        requestAnimationFrame(() => {
+          content.style.maxHeight = '0px';
+        });
+        const onEnd = (e) => {
+          if (e.target !== content) return;
+          if (e.propertyName !== 'max-height') return;
+          content.removeEventListener('transitionend', onEnd);
+          content.classList.remove('active');
+          content.style.maxHeight = null;
+          if (afterCollapse) afterCollapse();
+        };
+        content.addEventListener('transitionend', onEnd);
+      }
+
       // --- 4. Родительский аккордеон ---
       function toggleParentAccordion(plate) {
         const arrow = plate.querySelector('.version-arrow');
@@ -749,8 +789,7 @@
         if (!isExpanded) {
           plate.classList.add('expanded');
           arrow.textContent = '\u25BC';
-          content.classList.add('active');
-          content.style.maxHeight = '9999px';
+          // Сворачиваем все версии перед раскрытием родителя
           document.querySelectorAll('.parent-content .version-plate').forEach(p => {
             p.classList.remove('expanded'); p.style.display = '';
             const a = p.querySelector('.version-arrow');
@@ -759,21 +798,24 @@
           document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
             c.classList.remove('active'); c.style.maxHeight = null;
           });
-          setTimeout(() => { document.getElementById('modalBody').scrollTop = 0; }, 300);
+          smoothExpand(content, () => {
+            setTimeout(() => { document.getElementById('modalBody').scrollTop = 0; }, 50);
+          });
         } else {
           plate.classList.remove('expanded');
           arrow.textContent = '\u25BC';
-          content.classList.remove('active');
-          content.style.maxHeight = null;
-          document.querySelectorAll('.parent-content .version-plate').forEach(p => {
-            p.classList.remove('expanded'); p.style.display = '';
-            const a = p.querySelector('.version-arrow');
-            if (a) a.textContent = '\u25BC';
+          smoothCollapse(content, () => {
+            // Сбрасываем версии только после анимации
+            document.querySelectorAll('.parent-content .version-plate').forEach(p => {
+              p.classList.remove('expanded'); p.style.display = '';
+              const a = p.querySelector('.version-arrow');
+              if (a) a.textContent = '\u25BC';
+            });
+            document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
+              c.classList.remove('active'); c.style.maxHeight = null;
+            });
+            document.getElementById('modalBody').scrollTop = 0;
           });
-          document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
-            c.classList.remove('active'); c.style.maxHeight = null;
-          });
-          document.getElementById('modalBody').scrollTop = 0;
         }
       }
 
@@ -784,27 +826,40 @@
         const isExpanded = plate.classList.contains('expanded');
 
         if (!isExpanded) {
+          // Скрываем другие плашки
           document.querySelectorAll('.parent-content > .version-plate').forEach(p => {
             if (p !== plate) p.style.display = 'none';
           });
+          // Сворачиваем другой открытый контент
           document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
             if (c !== content) { c.classList.remove('active'); c.style.maxHeight = null; }
           });
 
           plate.classList.add('expanded');
           arrow.textContent = '\u25BC';
-          content.classList.add('active');
-          requestAnimationFrame(() => {
-            content.style.maxHeight = content.scrollHeight + 'px';
-          });
-          setTimeout(() => {
-            document.getElementById('modalBody').scrollTop = 0;
-            if (content.classList.contains('active')) {
-              content.style.maxHeight = content.scrollHeight + 'px';
+          smoothExpand(content, () => {
+            // После раскрытия — корректируем высоту родителя
+            const parentContent = document.querySelector('.parent-content');
+            if (parentContent && parentContent.classList.contains('active')) {
+              parentContent.style.maxHeight = 'none';
             }
-          }, 300);
+            document.getElementById('modalBody').scrollTop = 0;
+          });
         } else {
-          collapseAllVersions();
+          smoothCollapse(content, () => {
+            // Возвращаем все плашки только после анимации
+            document.querySelectorAll('.parent-content > .version-plate').forEach(p => {
+              p.classList.remove('expanded'); p.style.display = '';
+              const a = p.querySelector('.version-arrow');
+              if (a) a.textContent = '\u25BC';
+            });
+            document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
+              c.classList.remove('active'); c.style.maxHeight = null;
+            });
+            document.getElementById('modalBody').scrollTop = 0;
+          });
+          plate.classList.remove('expanded');
+          arrow.textContent = '\u25BC';
         }
       }
 
@@ -1210,4 +1265,4 @@
       });
     </script>
   </body>
-</html>
+  </html>
