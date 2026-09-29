@@ -246,10 +246,74 @@
       .fs-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4); }
       .fs-icon { width: 24px; height: 24px; object-fit: contain; display: block; }
 
+      .dl-btn {
+        position: absolute; bottom: 12px; right: 60px; z-index: 10;
+        width: 40px; height: 40px; background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; padding: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .dl-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4); }
+      .dl-icon { width: 24px; height: 24px; object-fit: contain; display: block; border-radius: 4px; }
+
       .viewer-container.has-video .fs-btn { bottom: 58px; }
+      .viewer-container.has-video .dl-btn { bottom: 58px; }
 
       .modal-desc { color: #fff; font-size: 1rem; line-height: 1.55; margin-bottom: 1.2rem; }
       .modal-tools { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+
+      /* ДИАЛОГ ВВОДА ИМЕНИ ФАЙЛА */
+      .dl-dialog-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.85); z-index: 5000;
+        display: flex; justify-content: center; align-items: center; padding: 20px;
+      }
+      .dl-dialog {
+        background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
+        width: 100%; max-width: 420px; padding: 1.5rem;
+        box-shadow: 0 32px 64px rgba(0,0,0,0.6);
+        animation: popIn 0.25s cubic-bezier(0.2,0,0.3,1);
+      }
+      .dl-dialog-title {
+        margin: 0 0 1rem; color: #fff; font-family: 'JetBrains Mono', monospace;
+        font-size: 1.1rem; font-weight: 700;
+      }
+      .dl-dialog-label {
+        display: block; color: var(--muted); font-size: 0.85rem; margin-bottom: 0.5rem;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .dl-dialog-input-wrap {
+        display: flex; align-items: stretch; border: 1px solid var(--border);
+        border-radius: 10px; overflow: hidden; background: var(--btn-bg);
+      }
+      .dl-dialog-input {
+        flex: 1; background: transparent; border: none; outline: none;
+        color: #fff; font-size: 1rem; padding: 0.7rem 0.8rem;
+        font-family: 'JetBrains Mono', monospace; min-width: 0;
+      }
+      .dl-dialog-ext {
+        display: flex; align-items: center; padding: 0.7rem 0.8rem;
+        color: var(--accent); font-family: 'JetBrains Mono', monospace;
+        font-size: 1rem; font-weight: 700; background: rgba(255,82,82,0.08);
+        border-left: 1px solid var(--border); white-space: nowrap;
+      }
+      .dl-dialog-buttons {
+        display: flex; gap: 0.7rem; margin-top: 1.2rem; justify-content: flex-end;
+      }
+      .dl-dialog-btn {
+        padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer;
+        font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700;
+        border: 1px solid var(--border); transition: background 0.2s, border-color 0.2s;
+      }
+      .dl-dialog-btn-cancel {
+        background: var(--btn-bg); color: var(--muted);
+      }
+      .dl-dialog-btn-cancel:hover { background: rgba(255,255,255,0.08); color: #fff; }
+      .dl-dialog-btn-ok {
+        background: rgba(255,82,82,0.2); color: var(--accent); border-color: rgba(255,82,82,0.3);
+      }
+      .dl-dialog-btn-ok:hover { background: rgba(255,82,82,0.35); color: #fff; }
 
       /* МОДАЛЬНОЕ ОКНО УЧАСТНИКА */
       .member-modal-content { display: flex; flex: 1; overflow: hidden; min-height: 0; }
@@ -283,6 +347,8 @@
         .card-header-row { padding: 1rem 1.2rem; }
         .fs-btn { width: 36px; height: 36px; bottom: 10px; right: 10px; }
         .fs-icon { width: 20px; height: 20px; }
+        .dl-btn { width: 36px; height: 36px; bottom: 10px; right: 54px; }
+        .dl-icon { width: 20px; height: 20px; }
         .team-img { width: 56px; height: 56px; }
         header { padding: 0.5rem 0.8rem; }
         nav a { font-size: 0.78rem; padding: 0.4rem 0.7rem; }
@@ -302,6 +368,8 @@
         .video-time { font-size: 0.66rem; }
         .video-controls { padding: 8px 8px 6px; gap: 6px; }
         .viewer-container.has-video .fs-btn { bottom: 52px; }
+        .viewer-container.has-video .dl-btn { bottom: 52px; }
+        .dl-dialog { padding: 1.2rem; max-width: 90vw; }
       }
 
       @media (max-width: 360px) {
@@ -407,6 +475,7 @@
             <div class="expanded-content">
               <div class="viewer-container" data-viewer="v1">
                 <img src="B 19.09.2026.png" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v1">
+                <button class="dl-btn" title="Скачать" onclick="downloadMedia('v1', event)"><img src="D.jpg" alt="Скачать" class="dl-icon"></button>
                 <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v1')">
                   <img src="R.png" alt="Развернуть" class="fs-icon">
                 </button>
@@ -424,6 +493,7 @@
             <div class="expanded-content">
               <div class="viewer-container" data-viewer="v2">
                 <img src="В 20.09.2026.png" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v2">
+                <button class="dl-btn" title="Скачать" onclick="downloadMedia('v2', event)"><img src="D.jpg" alt="Скачать" class="dl-icon"></button>
                 <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v2')">
                   <img src="R.png" alt="Развернуть" class="fs-icon">
                 </button>
@@ -441,6 +511,7 @@
             <div class="expanded-content">
               <div class="viewer-container" data-viewer="v3">
                 <img src="В 21.09.2026 (1).png" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v3">
+                <button class="dl-btn" title="Скачать" onclick="downloadMedia('v3', event)"><img src="D.jpg" alt="Скачать" class="dl-icon"></button>
                 <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v3')">
                   <img src="R.png" alt="Развернуть" class="fs-icon">
                 </button>
@@ -458,6 +529,7 @@
             <div class="expanded-content">
               <div class="viewer-container" data-viewer="v4">
                 <img src="В 21.09.2026 (2).png" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v4">
+                <button class="dl-btn" title="Скачать" onclick="downloadMedia('v4', event)"><img src="D.jpg" alt="Скачать" class="dl-icon"></button>
                 <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v4')">
                   <img src="R.png" alt="Развернуть" class="fs-icon">
                 </button>
@@ -475,6 +547,7 @@
             <div class="expanded-content">
               <div class="viewer-container" data-viewer="v5">
                 <img src="В 21.09.2026 (3).png" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v5">
+                <button class="dl-btn" title="Скачать" onclick="downloadMedia('v5', event)"><img src="D.jpg" alt="Скачать" class="dl-icon"></button>
                 <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v5')">
                   <img src="R.png" alt="Развернуть" class="fs-icon">
                 </button>
@@ -492,6 +565,7 @@
             <div class="expanded-content">
               <div class="viewer-container" data-viewer="v6">
                 <img src="В 21.09.2026 (4).png" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v6">
+                <button class="dl-btn" title="Скачать" onclick="downloadMedia('v6', event)"><img src="D.jpg" alt="Скачать" class="dl-icon"></button>
                 <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v6')">
                   <img src="R.png" alt="Развернуть" class="fs-icon">
                 </button>
@@ -509,6 +583,7 @@
             <div class="expanded-content">
               <div class="viewer-container" data-viewer="v7">
                 <img src="В 21.09.2026 (5).png" alt="Скриншот проекта" class="viewer-image" data-viewer-img="v7">
+                <button class="dl-btn" title="Скачать" onclick="downloadMedia('v7', event)"><img src="D.jpg" alt="Скачать" class="dl-icon"></button>
                 <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v7')">
                   <img src="R.png" alt="Развернуть" class="fs-icon">
                 </button>
@@ -537,6 +612,7 @@
                   </div>
                   <span class="video-time" data-time="v8">0:00 / 0:00</span>
                 </div>
+                <button class="dl-btn" title="Скачать" onclick="downloadMedia('v8', event)"><img src="D.jpg" alt="Скачать" class="dl-icon"></button>
                 <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v8')">
                   <img src="R.png" alt="Развернуть" class="fs-icon">
                 </button>
@@ -565,6 +641,7 @@
                   </div>
                   <span class="video-time" data-time="v9">0:00 / 0:00</span>
                 </div>
+                <button class="dl-btn" title="Скачать" onclick="downloadMedia('v9', event)"><img src="D.jpg" alt="Скачать" class="dl-icon"></button>
                 <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v9')">
                   <img src="R.png" alt="Развернуть" class="fs-icon">
                 </button>
@@ -574,13 +651,97 @@
               <p class="modal-tools" id="modalAuthorV9"></p>
             </div>
 
-          </div><!-- /parent-content -->
+            <!-- Версия 26.09.2026 (ВИДЕО) -->
+            <div class="version-plate" onclick="toggleVersionContent(this)">
+              <span>Версия 26.09.2026</span>
+              <span class="version-arrow">&#9660;</span>
+            </div>
+            <div class="expanded-content">
+              <div class="viewer-container has-video" data-viewer="v10">
+                <video class="viewer-video" data-viewer-video="v10" preload="metadata" playsinline>
+                  <source src="В 26.09.2026.mp4" type="video/mp4">
+                </video>
+                <div class="video-controls" data-controls="v10">
+                  <button class="play-btn" data-play-btn="v10" title="Воспроизвести / Пауза">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                  <div class="video-slider-wrap">
+                    <input type="range" class="video-slider" data-slider="v10" min="0" max="100" value="0" step="0.1">
+                  </div>
+                  <span class="video-time" data-time="v10">0:00 / 0:00</span>
+                </div>
+                <button class="dl-btn" title="Скачать" onclick="downloadMedia('v10', event)"><img src="D.jpg" alt="Скачать" class="dl-icon"></button>
+                <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v10')">
+                  <img src="R.png" alt="Развернуть" class="fs-icon">
+                </button>
+              </div>
+              <p class="modal-desc" id="modalDescV10"></p>
+              <p class="modal-tools" id="modalToolsV10"></p>
+              <p class="modal-tools" id="modalAuthorV10"></p>
+            </div>
+
+          </div><!-- /parent-content Сцена архив -->
+
+          <!-- РОДИТЕЛЬСКИЙ АККОРДЕОН: Город -->
+          <div class="version-plate parent-plate" onclick="toggleParentAccordion(this)">
+            <span>Город</span>
+            <span class="version-arrow">&#9660;</span>
+          </div>
+          <div class="expanded-content parent-content">
+
+            <!-- Версия 29.09.2026 (ВИДЕО) -->
+            <div class="version-plate" onclick="toggleVersionContent(this)">
+              <span>Версия 29.09.2026</span>
+              <span class="version-arrow">&#9660;</span>
+            </div>
+            <div class="expanded-content">
+              <div class="viewer-container has-video" data-viewer="v11">
+                <video class="viewer-video" data-viewer-video="v11" preload="metadata" playsinline>
+                  <source src="В 29.09.2026.mp4" type="video/mp4">
+                </video>
+                <div class="video-controls" data-controls="v11">
+                  <button class="play-btn" data-play-btn="v11" title="Воспроизвести / Пауза">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                  <div class="video-slider-wrap">
+                    <input type="range" class="video-slider" data-slider="v11" min="0" max="100" value="0" step="0.1">
+                  </div>
+                  <span class="video-time" data-time="v11">0:00 / 0:00</span>
+                </div>
+                <button class="dl-btn" title="Скачать" onclick="downloadMedia('v11', event)"><img src="D.jpg" alt="Скачать" class="dl-icon"></button>
+                <button class="fs-btn" title="Развернуть на весь экран" onclick="toggleFullscreen('v11')">
+                  <img src="R.png" alt="Развернуть" class="fs-icon">
+                </button>
+              </div>
+              <p class="modal-desc" id="modalDescV11"></p>
+              <p class="modal-tools" id="modalToolsV11"></p>
+              <p class="modal-tools" id="modalAuthorV11"></p>
+            </div>
+
+          </div><!-- /parent-content Город -->
+
         </div><!-- /modal-body -->
       </div>
     </div>
 
     <!-- МОДАЛЬНОЕ ОКНО УЧАСТНИКА -->
     <div class="modal-overlay" id="memberModalOverlay"></div>
+
+    <!-- ДИАЛОГ ВВОДА ИМЕНИ ФАЙЛА -->
+    <div class="dl-dialog-overlay" id="dlDialogOverlay" style="display:none;">
+      <div class="dl-dialog">
+        <h3 class="dl-dialog-title">Скачать файл</h3>
+        <label class="dl-dialog-label" for="dlFilenameInput">Имя файла:</label>
+        <div class="dl-dialog-input-wrap">
+          <input type="text" class="dl-dialog-input" id="dlFilenameInput" autocomplete="off" spellcheck="false">
+          <span class="dl-dialog-ext" id="dlFileExt"></span>
+        </div>
+        <div class="dl-dialog-buttons">
+          <button class="dl-dialog-btn dl-dialog-btn-cancel" onclick="closeDlDialog()">Отмена</button>
+          <button class="dl-dialog-btn dl-dialog-btn-ok" onclick="confirmDlDownload()">Скачать</button>
+        </div>
+      </div>
+    </div>
 
     <footer>
       <p>2026 BU3DC#</p>
@@ -610,6 +771,9 @@
         ]
       };
 
+      // --- 0a. Состояние диалога скачивания ---
+      let dlPending = null; // { src, ext }
+
       // --- 1. Интро ---
       const introEl = document.getElementById('intro');
       if (introEl) {
@@ -625,51 +789,37 @@
         document.getElementById('modalProjectTitle').textContent = title;
 
         // --- Версия 19.09.2026 ---
-        const imgV1 = document.querySelector('[data-viewer-img="v1"]');
-        imgV1.src = 'B 19.09.2026.png';
         document.getElementById('modalDescV1').textContent =
           'Пока не скажу, что это и не раскрою сюжет, но скажу, что начал делать первую сцену архива (на фото один из этапов).';
         document.getElementById('modalToolsV1').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV1').textContent = '-Ophiuchus';
 
         // --- Версия 20.09.2026 ---
-        const imgV2 = document.querySelector('[data-viewer-img="v2"]');
-        imgV2.src = 'В 20.09.2026.png';
         document.getElementById('modalDescV2').textContent = 'А вот и архивист! (предварительная версия)';
         document.getElementById('modalToolsV2').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV2').textContent = '-Ophiuchus';
 
         // --- Версия 21.09.2026 (1) ---
-        const imgV3 = document.querySelector('[data-viewer-img="v3"]');
-        imgV3.src = 'В 21.09.2026 (1).png';
         document.getElementById('modalDescV3').textContent = 'Ящики теперь ящики, а не коробки.';
         document.getElementById('modalToolsV3').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV3').textContent = '-Ophiuchus';
 
         // --- Версия 21.09.2026 (2) ---
-        const imgV4 = document.querySelector('[data-viewer-img="v4"]');
-        imgV4.src = 'В 21.09.2026 (2).png';
         document.getElementById('modalDescV4').textContent = 'Добавлены лампочки, вместо света из ниоткуда.';
         document.getElementById('modalToolsV4').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV4').textContent = '-Ophiuchus';
 
         // --- Версия 21.09.2026 (3) ---
-        const imgV5 = document.querySelector('[data-viewer-img="v5"]');
-        imgV5.src = 'В 21.09.2026 (3).png';
         document.getElementById('modalDescV5').textContent = 'Добавлен стол с ноутбуком, на котором открыт браузер.';
         document.getElementById('modalToolsV5').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV5').textContent = '-Ophiuchus';
 
         // --- Версия 21.09.2026 (4) ---
-        const imgV6 = document.querySelector('[data-viewer-img="v6"]');
-        imgV6.src = 'В 21.09.2026 (4).png';
         document.getElementById('modalDescV6').textContent = 'В одном из ящиков теперь лежит старинная книга.';
         document.getElementById('modalToolsV6').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV6').textContent = '-Ophiuchus';
 
         // --- Версия 21.09.2026 (5) ---
-        const imgV7 = document.querySelector('[data-viewer-img="v7"]');
-        imgV7.src = 'В 21.09.2026 (5).png';
         document.getElementById('modalDescV7').textContent = 'Теперь в сцене есть персонаж с симуляцией ткани.';
         document.getElementById('modalToolsV7').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV7').textContent = '-Ophiuchus';
@@ -686,12 +836,23 @@
         document.getElementById('modalToolsV9').textContent = 'Инструменты: Blender';
         document.getElementById('modalAuthorV9').textContent = '-Ophiuchus';
 
+        // --- Версия 26.09.2026 (ВИДЕО) ---
+        document.getElementById('modalDescV10').textContent =
+          'Пересоздаю персонажа, часть первая.';
+        document.getElementById('modalToolsV10').textContent = 'Инструменты: Blender';
+        document.getElementById('modalAuthorV10').textContent = '-Ophiuchus';
+
+        // --- Версия 29.09.2026 (ВИДЕО) ---
+        document.getElementById('modalDescV11').textContent = 'Планировка города.';
+        document.getElementById('modalToolsV11').textContent = 'Инструменты: Blender';
+        document.getElementById('modalAuthorV11').textContent = '-Ophiuchus';
+
         // Сброс всех аккордеонов
         resetAccordions();
         overlay.classList.add('active');
 
         // Инициализация просмотрщиков
-        for (const vid of ['v1','v2','v3','v4','v5','v6','v7','v8','v9']) {
+        for (const vid of ['v1','v2','v3','v4','v5','v6','v7','v8','v9','v10','v11']) {
           initViewer(vid);
         }
 
@@ -716,25 +877,23 @@
 
       // --- 3. Сброс всех аккордеонов ---
       function resetAccordions() {
-        const parentPlate = document.querySelector('.parent-plate');
-        if (parentPlate) {
-          parentPlate.classList.remove('expanded');
-          parentPlate.style.display = '';
-          const pArrow = parentPlate.querySelector('.version-arrow');
-          if (pArrow) pArrow.textContent = '\u25BC';
-        }
-        const parentContent = document.querySelector('.parent-content');
-        if (parentContent) {
-          parentContent.classList.remove('active');
-          parentContent.style.maxHeight = null;
-        }
-        document.querySelectorAll('.parent-content .version-plate').forEach(plate => {
+        document.querySelectorAll('.parent-plate').forEach(plate => {
           plate.classList.remove('expanded');
           plate.style.display = '';
           const arrow = plate.querySelector('.version-arrow');
           if (arrow) arrow.textContent = '\u25BC';
         });
-        document.querySelectorAll('.parent-content .expanded-content').forEach(c => {
+        document.querySelectorAll('.parent-content').forEach(content => {
+          content.classList.remove('active');
+          content.style.maxHeight = null;
+        });
+        document.querySelectorAll('.parent-content > .version-plate').forEach(plate => {
+          plate.classList.remove('expanded');
+          plate.style.display = '';
+          const arrow = plate.querySelector('.version-arrow');
+          if (arrow) arrow.textContent = '\u25BC';
+        });
+        document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
           c.classList.remove('active');
           c.style.maxHeight = null;
         });
@@ -744,7 +903,6 @@
       function smoothExpand(content, afterExpand) {
         content.classList.add('active');
         content.style.maxHeight = '0px';
-        // force reflow — фиксируем стартовую высоту
         void content.offsetHeight;
         requestAnimationFrame(() => {
           content.style.maxHeight = content.scrollHeight + 'px';
@@ -753,7 +911,6 @@
           if (e.target !== content) return;
           if (e.propertyName !== 'max-height') return;
           content.removeEventListener('transitionend', onEnd);
-          // Отпускаем высоту, чтобы контент мог свободно расти
           content.style.maxHeight = 'none';
           if (afterExpand) afterExpand();
         };
@@ -762,9 +919,7 @@
 
       // --- 3b. Плавное сворачивание ---
       function smoothCollapse(content, afterCollapse) {
-        // Фиксируем текущую высоту инлайном
         content.style.maxHeight = content.scrollHeight + 'px';
-        // force reflow — фиксируем старт
         void content.offsetHeight;
         requestAnimationFrame(() => {
           content.style.maxHeight = '0px';
@@ -789,15 +944,17 @@
         if (!isExpanded) {
           plate.classList.add('expanded');
           arrow.textContent = '\u25BC';
-          // Сворачиваем все версии перед раскрытием родителя
-          document.querySelectorAll('.parent-content .version-plate').forEach(p => {
+
+          const parentContent = content;
+          parentContent.querySelectorAll(':scope > .version-plate').forEach(p => {
             p.classList.remove('expanded'); p.style.display = '';
             const a = p.querySelector('.version-arrow');
             if (a) a.textContent = '\u25BC';
           });
-          document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
+          parentContent.querySelectorAll(':scope > .expanded-content').forEach(c => {
             c.classList.remove('active'); c.style.maxHeight = null;
           });
+
           smoothExpand(content, () => {
             setTimeout(() => { document.getElementById('modalBody').scrollTop = 0; }, 50);
           });
@@ -805,13 +962,13 @@
           plate.classList.remove('expanded');
           arrow.textContent = '\u25BC';
           smoothCollapse(content, () => {
-            // Сбрасываем версии только после анимации
-            document.querySelectorAll('.parent-content .version-plate').forEach(p => {
+            const parentContent = content;
+            parentContent.querySelectorAll(':scope > .version-plate').forEach(p => {
               p.classList.remove('expanded'); p.style.display = '';
               const a = p.querySelector('.version-arrow');
               if (a) a.textContent = '\u25BC';
             });
-            document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
+            parentContent.querySelectorAll(':scope > .expanded-content').forEach(c => {
               c.classList.remove('active'); c.style.maxHeight = null;
             });
             document.getElementById('modalBody').scrollTop = 0;
@@ -824,22 +981,19 @@
         const arrow = plate.querySelector('.version-arrow');
         const content = plate.nextElementSibling;
         const isExpanded = plate.classList.contains('expanded');
+        const parentContent = plate.parentElement;
 
         if (!isExpanded) {
-          // Скрываем другие плашки
-          document.querySelectorAll('.parent-content > .version-plate').forEach(p => {
+          parentContent.querySelectorAll(':scope > .version-plate').forEach(p => {
             if (p !== plate) p.style.display = 'none';
           });
-          // Сворачиваем другой открытый контент
-          document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
+          parentContent.querySelectorAll(':scope > .expanded-content').forEach(c => {
             if (c !== content) { c.classList.remove('active'); c.style.maxHeight = null; }
           });
 
           plate.classList.add('expanded');
           arrow.textContent = '\u25BC';
           smoothExpand(content, () => {
-            // После раскрытия — корректируем высоту родителя
-            const parentContent = document.querySelector('.parent-content');
             if (parentContent && parentContent.classList.contains('active')) {
               parentContent.style.maxHeight = 'none';
             }
@@ -847,13 +1001,12 @@
           });
         } else {
           smoothCollapse(content, () => {
-            // Возвращаем все плашки только после анимации
-            document.querySelectorAll('.parent-content > .version-plate').forEach(p => {
+            parentContent.querySelectorAll(':scope > .version-plate').forEach(p => {
               p.classList.remove('expanded'); p.style.display = '';
               const a = p.querySelector('.version-arrow');
               if (a) a.textContent = '\u25BC';
             });
-            document.querySelectorAll('.parent-content > .expanded-content').forEach(c => {
+            parentContent.querySelectorAll(':scope > .expanded-content').forEach(c => {
               c.classList.remove('active'); c.style.maxHeight = null;
             });
             document.getElementById('modalBody').scrollTop = 0;
@@ -959,8 +1112,11 @@
 
         const newImg = newContainer.querySelector('.viewer-image');
         const newVideo = newContainer.querySelector('.viewer-video');
-        const newBtn = newContainer.querySelector('.fs-btn');
-        if (newBtn) newBtn.setAttribute('onclick', 'toggleFullscreen(\'' + vid + '\')');
+        const newFsBtn = newContainer.querySelector('.fs-btn');
+        const newDlBtn = newContainer.querySelector('.dl-btn');
+
+        if (newFsBtn) newFsBtn.setAttribute('onclick', 'toggleFullscreen(\'' + vid + '\')');
+        if (newDlBtn) newDlBtn.setAttribute('onclick', 'downloadMedia(\'' + vid + '\', event)');
 
         viewers[vid] = {
           panX: 0, panY: 0, scale: 1,
@@ -988,6 +1144,99 @@
         }
 
         updateTransform(vid);
+      }
+
+      // --- 8a. СКАЧИВАНИЕ МЕДИА ---
+      function downloadMedia(vid, ev) {
+        // Немедленно останавливаем всплытие, чтобы не сработал fullscreen
+        if (ev) {
+          ev.stopPropagation();
+          ev.preventDefault();
+        }
+        if (window.event) {
+          window.event.stopPropagation();
+          window.event.preventDefault();
+        }
+
+        const v = viewers[vid];
+        if (!v) return;
+
+        let src = '';
+        let ext = '';
+
+        if (v.isVideo && v.video) {
+          const source = v.video.querySelector('source');
+          src = source ? source.src : v.video.src;
+          ext = '.mp4';
+        } else if (v.img) {
+          src = v.img.src;
+          ext = '.png';
+        }
+
+        if (!src) return;
+
+        // Извлекаем имя файла без расширения для подсказки в инпуте
+        const filename = src.split('/').pop() || 'file';
+        const baseName = filename.replace(/\.[^.]+$/, '');
+
+        // Показываем диалог ввода имени
+        dlPending = { src: src, ext: ext };
+        const input = document.getElementById('dlFilenameInput');
+        const extSpan = document.getElementById('dlFileExt');
+        input.value = baseName;
+        extSpan.textContent = ext;
+
+        const overlay = document.getElementById('dlDialogOverlay');
+        overlay.style.display = 'flex';
+
+        // Фокус на инпут + выделение
+        setTimeout(() => {
+          input.focus();
+          input.select();
+        }, 50);
+
+        // Enter = скачать, Escape = отмена
+        input.onkeydown = function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            confirmDlDownload();
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            closeDlDialog();
+          }
+        };
+      }
+
+      function closeDlDialog() {
+        document.getElementById('dlDialogOverlay').style.display = 'none';
+        dlPending = null;
+      }
+
+      function confirmDlDownload() {
+        if (!dlPending) return;
+
+        const input = document.getElementById('dlFilenameInput');
+        let name = input.value.trim();
+
+        // Удаляем любые расширения, которые пользователь мог вписать
+        name = name.replace(/\.[^.]+$/, '');
+        // Удаляем недопустимые символы для имени файла
+        name = name.replace(/[\\/:*?"<>|]/g, '_');
+        if (!name) name = 'file';
+
+        const fullFilename = name + dlPending.ext;
+
+        // Создаём ссылку с download-атрибутом — это вызовет окно сохранения
+        const a = document.createElement('a');
+        a.href = dlPending.src;
+        a.download = fullFilename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        // Удаляем ссылку
+        setTimeout(() => { document.body.removeChild(a); }, 200);
+
+        closeDlDialog();
       }
 
       // --- 9. УПРАВЛЕНИЕ ВИДЕО ---
@@ -1244,13 +1493,17 @@
         }
       }, true);
 
-      // --- 15. ЗАКРЫТИЕ МОДАЛЬНЫХ ОКОН ПО ESC И УПРАВЛЕНИЕ ВИДЕО ПРОБЕЛОМ ---
+      // --- 15. ЗАКРЫТИЕ МОДАЛЬНЫХ ОКОН ПО ESC ---
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
+          const dlOverlay = document.getElementById('dlDialogOverlay');
+          if (dlOverlay && dlOverlay.style.display === 'flex') {
+            closeDlDialog();
+            return;
+          }
           const memberOverlay = document.getElementById('memberModalOverlay');
           if (memberOverlay) memberOverlay.remove();
         }
-        // Пробел — play/pause для видео в полноэкранном режиме
         if (e.key === ' ' || e.code === 'Space') {
           const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
           if (fsEl) {
@@ -1262,6 +1515,11 @@
             }
           }
         }
+      });
+
+      // Клик по фону диалога скачивания — закрытие
+      document.getElementById('dlDialogOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeDlDialog();
       });
     </script>
   </body>
